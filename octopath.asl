@@ -42,6 +42,7 @@ startup
   settings.Add("bosses", true, "Bosses");
   settings.Add("boss_guardian_of_the_first_flame", false, "Guardian of the First Flame", "bosses");
   settings.Add("boss_russell", false, "Russell", "bosses");
+  settings.Add("boss_mikk_and_makk", false, "Mikk and Makk", "bosses");
 
   settings.Add("characters", true, "Characters");
   settings.Add("character_cyrus", false, "Split on Cyrus", "characters");
@@ -71,6 +72,8 @@ split
   }
 
   // Bosses
+
+  // guardian
   if(current.enemyOneID >= 609 && current.enemyOneID <= 612 && current.enemyOneHP <= 0) 
   { 
     if(vars.Splits.Contains("boss_guardian_of_the_first_flame")) { return false; }
@@ -78,6 +81,7 @@ split
     return settings["boss_guardian_of_the_first_flame"];
   }
 
+  // russell
   if(
     (current.enemyTwoID >= 701 && current.enemyTwoID <= 704 && current.enemyTwoHP <= 0) && // russell
     (current.enemyThreeID >= 705 && current.enemyThreeID <= 708 && current.enemyThreeHP <= 0) && // wisp
@@ -87,5 +91,16 @@ split
     if(vars.Splits.Contains("boss_russell")) { return false; }
     vars.Splits.Add("boss_russell");
     return settings["boss_russell"];
+  }
+
+  // mikk and makk
+  if(
+    (current.enemyThreeID >= 501 && current.enemyThreeID <= 504 && current.enemyThreeHP <= 0) && // mikk
+    (current.enemyFourID >= 505 && current.enemyFourID <= 508 && current.enemyFourHP <= 0) // makk
+  )
+  {
+    if(vars.Splits.Contains("boss_mikk_and_makk")) { return false; }
+    vars.Splits.Add("boss_mikk_and_makk");
+    return settings["boss_mikk_and_makk"];
   }
 }
