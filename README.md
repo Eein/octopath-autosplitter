@@ -1,1 +1,1 @@
-"# octopath-autosplitter" 
+# octopath-autosplitter
