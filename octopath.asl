@@ -79,8 +79,6 @@ split
   }
 
   if(
-    (settings["boss_russell"]) &&
-    (!vars.Splits.Contains("boss_russell")) &&
     (current.enemyTwoID >= 701 && current.enemyTwoID <= 704 && current.enemyTwoHP <= 0) && // russell
     (current.enemyThreeID >= 705 && current.enemyThreeID <= 708 && current.enemyThreeHP <= 0) && // wisp
     (current.enemyFourID >= 705 && current.enemyFourID <= 708 && current.enemyFourHP <= 0) // wisp
