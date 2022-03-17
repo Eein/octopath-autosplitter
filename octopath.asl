@@ -21,6 +21,7 @@ state("Octopath_Traveler-Win64-Shipping")
 
   // used for splitting when character enters party
   int cyrusHP: 0x0289CC48, 0x370, 0x1C8, 0x19C;
+  int tressaHP: 0x0289CC48, 0x370, 0x1C8, 0xD4;
 }
 
 init 
@@ -44,6 +45,7 @@ startup
 
   settings.Add("characters", true, "Characters");
   settings.Add("character_cyrus", false, "Split on Cyrus", "characters");
+  settings.Add("character_tressa", false, "Split on Tressa", "characters");
 }
 
 start
@@ -59,6 +61,13 @@ split
     if(vars.Splits.Contains("character_cyrus")) { return false; }
     vars.Splits.Add("character_cyrus");
     return settings["character_cyrus"];
+  }
+
+  if(old.tressaHP == 0 && current.tressaHP != 0)
+  {
+    if(vars.Splits.Contains("character_tressa")) { return false; }
+    vars.Splits.Add("character_tressa");
+    return settings["character_tressa"];
   }
 
   // Bosses
