@@ -95,6 +95,10 @@ startup
   settings.Add("fight_yvon", true, "Yvon", "cyrus_story");
   settings.Add("fight_lucia", true, "Lucia", "cyrus_story");
 
+  // Tressa
+  settings.Add("tressa_story", false, "Tressa Story");
+  settings.Add("fight_mikk_and_makk", true, "Mikk and Makk", "tressa_story");
+
   // Galdera
   settings.Add("finis_start", false, "Enter Gate of Finis", "galdera");
   settings.Add("journeys_end_start", false, "Enter Journey's End", "galdera");
@@ -198,6 +202,11 @@ split
     else if (current.cyrusProgress == 1110) return settings["fight_gideon"];
     else if (current.cyrusProgress == 2160) return settings["fight_yvon"];
     else if (current.cyrusProgress == 3060) return settings["fight_lucia"];
+  }
+
+  // Tressa
+  if (old.tressaProgress != current.tressaProgress && old.zoneID != 0) {
+    if (current.tressaProgress == 170) return settings["fight_mikk_and_makk"];
   }
 
   // Credits
