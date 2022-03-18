@@ -18,8 +18,14 @@ state("Octopath_Traveler-Win64-Shipping")
   int enemyFourHP: 0x289CBC8, 0x4C0, 0x20, 0x160, 0x20, 0x3D8, 0xE0, 0x3E4;
 
   // used for splitting when character enters party
+  int ophiliaHP: 0x0289CC48, 0x370, 0x1C8, 0x4BC;
   int cyrusHP: 0x0289CC48, 0x370, 0x1C8, 0x19C;
   int tressaHP: 0x0289CC48, 0x370, 0x1C8, 0xD4;
+  int olbericHP: 0x0289CC48, 0x370, 0x1C8, 0xC;
+  int primroseHP: 0x0289CC48, 0x370, 0x1C8, 0x264;
+  int alfynHP: 0x0289CC48, 0x370, 0x1C8, 0x584;
+  int haanitHP: 0x0289CC48, 0x370, 0x1C8, 0x32C;
+  int therionHP: 0x0289CC48, 0x370, 0x1C8, 0x3F4;
 }
 
 init 
@@ -37,14 +43,17 @@ update
 
 startup 
 {
+  /
   settings.Add("characters", true, "Characters");
-  settings.Add("character_ophilia", true, "Ophilia", "characters");
+  settings.Add("character_ophilia", true, "Split on Ophilia", "characters");
   settings.Add("character_cyrus", true, "Split on Cyrus", "characters");
-  settings.Add("character_tressa", true, "Tressa", "characters");
-  settings.Add("character_olberic", true, "Olberic", "characters");
-  settings.Add("character_primrose", true, "Primrose", "characters");
-  settings.Add("character_alfyn", true, "Alfyn", "characters");
-  settings.Add("character_haanit", true, "H'aanit", "characters");
+  settings.Add("character_tressa", true, "Split on Tressa", "characters");
+  settings.Add("character_olberic", true, "Split on Olberic", "characters");
+  settings.Add("character_primrose", true, "Split on Primrose", "characters");
+  settings.Add("character_alfyn", true, "Split on Alfyn", "characters");
+  settings.Add("character_haanit", true, "Split on H'aanit", "characters");
+  settings.Add("character_therion", true, "Split on Therion", "characters");
+
   settings.Add("galdera", false, "Galdera");
 
   //Ophilia
@@ -84,6 +93,13 @@ start
 split 
 {
   // Characters
+  if(old.ophiliaHP == 0 && current.ophiliaHP != 0)
+  {
+    if(vars.Splits.Contains("character_ophilia")) { return false; }
+    vars.Splits.Add("character_ophilia");
+    return settings["character_ophilia"];
+  }
+
   if(old.cyrusHP == 0 && current.cyrusHP != 0) 
   {
     if(vars.Splits.Contains("character_cyrus")) { return false; }
@@ -96,6 +112,41 @@ split
     if(vars.Splits.Contains("character_tressa")) { return false; }
     vars.Splits.Add("character_tressa");
     return settings["character_tressa"];
+  }
+
+  if(old.olbericHP == 0 && current.olbericHP != 0)
+  {
+    if(vars.Splits.Contains("character_olberic")) { return false; }
+    vars.Splits.Add("character_olberic");
+    return settings["character_olberic"];
+  }
+
+  if(old.primroseHP == 0 && current.primroseHP != 0)
+  {
+    if(vars.Splits.Contains("character_primrose")) { return false; }
+    vars.Splits.Add("character_primrose");
+    return settings["character_primrose"];
+  }
+
+  if(old.alfynHP == 0 && current.alfynHP != 0)
+  {
+    if(vars.Splits.Contains("character_alfyn")) { return false; }
+    vars.Splits.Add("character_alfyn");
+    return settings["character_alfyn"];
+  }
+
+  if(old.haanitHP == 0 && current.haanitHP != 0)
+  {
+    if(vars.Splits.Contains("character_haanit")) { return false; }
+    vars.Splits.Add("character_haanit");
+    return settings["character_haanit"];
+  }
+
+  if(old.therionHP == 0 && current.therionHP != 0)
+  {
+    if(vars.Splits.Contains("character_therion")) { return false; }
+    vars.Splits.Add("character_therion");
+    return settings["character_therion"];
   }
 
   // Olberic
