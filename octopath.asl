@@ -68,7 +68,7 @@ startup
 
   //Ophilia
   settings.Add("ophilia_story", false, "Ophilia Story");
-  settings.Add("fight_guardian_of_the_lost_flame", true, "Guardian of the First Flame", "ophilia_story");
+  settings.Add("fight_guardian", true, "Guardian of the First Flame", "ophilia_story");
   settings.Add("fight_hrodvitnir", true, "Hrodvitnir", "ophilia_story");
   settings.Add("fight_mm_sf", true, "Mystery Man & Shady Figure", "ophilia_story");
   settings.Add("fight_cultists", true, "Cultists", "ophilia_story");
@@ -87,6 +87,13 @@ startup
   settings.Add("fight_erhardt", true, "Erhardt", "olberic_story");
   settings.Add("fight_redhat", true, "Red Hat", "olberic_story");
   settings.Add("fight_werner", true, "Werner", "olberic_story");
+
+  // Cyrus
+  settings.Add("cyrus_story", false, "Cyrus Story");
+  settings.Add("fight_russell", true, "Russell", "cyrus_story");
+  settings.Add("fight_gideon", true, "Gideon", "cyrus_story");
+  settings.Add("fight_yvon", true, "Yvon", "cyrus_story");
+  settings.Add("fight_lucia", true, "Lucia", "cyrus_story");
 
   // Galdera
   settings.Add("finis_start", false, "Enter Gate of Finis", "galdera");
@@ -176,12 +183,21 @@ split
     else if (current.olbericProgress == 3110) return settings["fight_werner"];
   }
 
+  // Olphilia
   if (old.ophiliaProgress != current.ophiliaProgress && old.zoneID != 0) {
     if (current.ophiliaProgress == 170) return settings["fight_guardian"];
     else if (current.ophiliaProgress == 1140) return settings["fight_hrodvitnir"];
     else if (current.ophiliaProgress == 2110) return settings["fight_mm_sf"];
     else if (current.ophiliaProgress == 3090) return settings["fight_cultists"];
     else if (current.ophiliaProgress == 3150) return settings["fight_mattias"];
+  }
+
+  // Cyrus
+  if (old.cyrusProgress != current.cyrusProgress && old.zoneID != 0) {
+    if (current.cyrusProgress == 130) return settings["fight_russell"];
+    else if (current.cyrusProgress == 1110) return settings["fight_gideon"];
+    else if (current.cyrusProgress == 2160) return settings["fight_yvon"];
+    else if (current.cyrusProgress == 3060) return settings["fight_lucia"];
   }
 
   // Credits
