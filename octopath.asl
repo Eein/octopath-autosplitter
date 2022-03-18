@@ -50,10 +50,10 @@ init
   };
   vars.Split = Split;
 
-  Func<int,string,string,bool> SplitChapter = (progress, key, name) => {
+  Func<int,string,bool> SplitChapter = (progress, key) => {
     if (progress % 1000 == 0) {
       int currentChapter = progress / 1000;
-      string splitKey = String.Format("chapter_end_" + key + "{0}", currentChapter.ToString());
+      string splitKey = String.Format("chapter_end_" + key + "_{0}", currentChapter.ToString());
       if(vars.Splits.Contains(splitKey)) { return false; }
       if (current.gameState == 2 && old.gameState == 5) {
         return vars.Split(splitKey);
@@ -221,7 +221,7 @@ split
     else if (current.olbericProgress == 2130) return vars.Split("fight_erhardt");
     else if (current.olbericProgress == 3050) return vars.Split("fight_red Hat");
     else if (current.olbericProgress == 3110) return vars.Split("fight_werner");
-    else { vars.SplitChapter(current.olbericProgress, "olberic", "Olberic"); }
+    else { vars.SplitChapter(current.olbericProgress, "olberic"); }
   }
 
   // Olphilia
@@ -231,7 +231,7 @@ split
     else if (current.ophiliaProgress == 2110) return vars.Split("fight_mm_sf");
     else if (current.ophiliaProgress == 3090) return vars.Split("fight_cultists");
     else if (current.ophiliaProgress == 3150) return vars.Split("fight_mattias");
-    else { vars.SplitChapter(current.ophiliaProgress, "ophilia", "Ophilia"); }
+    else { vars.SplitChapter(current.ophiliaProgress, "ophilia"); }
   }
 
   // Cyrus
@@ -240,13 +240,13 @@ split
     else if (current.cyrusProgress == 1110) return vars.Split("fight_gideon");
     else if (current.cyrusProgress == 2160) return vars.Split("fight_yvon");
     else if (current.cyrusProgress == 3060) return vars.Split("fight_lucia");
-    else { vars.SplitChapter(current.cyrusProgress, "cyrus", "Cyrus"); }
+    else { vars.SplitChapter(current.cyrusProgress, "cyrus"); }
   }
 
   // Tressa
   if (old.tressaProgress != current.tressaProgress && old.zoneID != 0) {
     if (current.tressaProgress == 170) return vars.Split("fight_mikk_and_makk");
-    else { vars.SplitChapter(current.tressaProgress, "tressa", "Tressa"); }
+    else { vars.SplitChapter(current.tressaProgress, "tressa"); }
   }
 
   // Credits
