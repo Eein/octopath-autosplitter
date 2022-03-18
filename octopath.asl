@@ -101,8 +101,6 @@ startup
   settings.Add("character_haanit", false, "H'aanit", "split_characters");
   settings.Add("character_therion", false, "Therion", "split_characters");
 
-  settings.Add("galdera", false, "Galdera");
-
   //Ophilia
   settings.Add("ophilia_story", true, "Ophilia Story");
   settings.Add("fight_guardian", false, "Guardian of the First Flame", "ophilia_story");
@@ -141,6 +139,7 @@ startup
   settings.Add("fight_mikk_and_makk", false, "Mikk and Makk", "tressa_story");
 
   // Galdera
+  settings.Add("galdera", true, "Galdera");
   settings.Add("finis_start", false, "Enter Gate of Finis", "galdera");
   settings.Add("journeys_end_start", false, "Enter Journey's End", "galdera");
   settings.Add("at_journeys_end", false, "Galdera End", "galdera");
