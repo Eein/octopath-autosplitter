@@ -1,11 +1,11 @@
 state("Octopath_Traveler-Win64-Shipping")
 {
-  // int start: 0x2B3D270, 0x174;
   int start: 0x2E08100, 0x44;
-  int characterHighlighted: 0x289D268, 0x368, 0x0, 0x328;
+  int characterIsHighlighted: 0x289D268, 0x368, 0x0, 0x328;
 
   int zoneID: 0x289D240, 0x36C;
   int money: 0x0289CC48, 0x370, 0x158;
+  int gameState: 0x0289D270, 0x36C;
 
   int ophiliaProgress: 0x0289CC48, 0x370, 0x1C8, 0x510;
   int cyrusProgress: 0x0289CC48, 0x370, 0x1C8, 0x1f0;
@@ -42,6 +42,16 @@ state("Octopath_Traveler-Win64-Shipping")
 init 
 {
   vars.Splits = new HashSet<string>();
+
+  Func<string,bool> Split = (key) => {
+    if(vars.Splits.Contains(key)) { return false; }
+    vars.Splits.Add(key);
+    return settings[key];
+  };
+  vars.Split = Split;
+
+  vars.isChapterEnding = false;
+  vars.charChapterEnding = "";
 }
 
 update
@@ -49,11 +59,38 @@ update
   if (timer.CurrentPhase == TimerPhase.NotRunning)
   {
     vars.Splits.Clear();
+    vars.isChapterEnding = false;
+    vars.charChapterEnding = "";
   }
 }
 
 startup 
 {
+  Func<string,string> NameToKey = (name) => {
+    return name.ToLower().Replace(' ', '_');
+  };
+  vars.NameToKey = NameToKey;
+
+  vars.ShrineZoneIDs = new Dictionary<int,string> {
+    { 179, "Cleric Shrine" },
+    { 180, "Scholar Shrine" },
+    { 181, "Merchant Shrine" },
+    { 182, "Warrior Shrine" },
+    { 183, "Dancer Shrine" },
+    { 184, "Apothecary Shrine" },
+    { 185, "Thief Shrine" },
+    { 186, "Hunter Shrine" }
+  };
+
+  settings.Add("get_shrine", true, "Get Shrine");
+  foreach (var shrineName in vars.ShrineZoneIDs.Values) {
+    settings.Add(
+      String.Format("get_{0}", NameToKey(shrineName)),
+      false,
+      String.Format("Get {0}", shrineName),
+      "get_shrine"
+    );
+  }
   settings.Add("split_characters", true, "Split On Characters");
   settings.Add("character_ophilia", false, "Ophilia", "split_characters");
   settings.Add("character_cyrus", false, "Cyrus", "split_characters");
@@ -67,37 +104,41 @@ startup
   settings.Add("galdera", false, "Galdera");
 
   //Ophilia
-  settings.Add("ophilia_story", false, "Ophilia Story");
-  settings.Add("fight_guardian", true, "Guardian of the First Flame", "ophilia_story");
-  settings.Add("fight_hrodvitnir", true, "Hrodvitnir", "ophilia_story");
-  settings.Add("fight_mm_sf", true, "Mystery Man & Shady Figure", "ophilia_story");
-  settings.Add("fight_cultists", true, "Cultists", "ophilia_story");
-  settings.Add("fight_mattias", true, "Mattias", "ophilia_story");
+  settings.Add("ophilia_story", true, "Ophilia Story");
+  settings.Add("fight_guardian", false, "Guardian of the First Flame", "ophilia_story");
+  settings.Add("fight_hrodvitnir", false, "Hrodvitnir", "ophilia_story");
+  settings.Add("fight_mm_sf", false, "Mystery Man & Shady Figure", "ophilia_story");
+  settings.Add("fight_cultists", false, "Cultists", "ophilia_story");
+  settings.Add("fight_mattias", false, "Mattias", "ophilia_story");
 
   // Olberic
-  settings.Add("olberic_story", false, "Olberic Story");
-  settings.Add("fight_gaston", true, "Gaston", "olberic_story");
-  settings.Add("fight_victorino", true, "Victorino", "olberic_story");
-  settings.Add("fight_joshua", true, "Goshua", "olberic_story");
-  settings.Add("fight_archibold", true, "Archibold", "olberic_story");
-  settings.Add("fight_gustav", true, "Gustav", "olberic_story");
-  settings.Add("fight_lizards1", true, "Lizards #1", "olberic_story");
-  settings.Add("fight_lizards2", true, "Lizards #2", "olberic_story");
-  settings.Add("fight_lizardking", true, "Lizardking", "olberic_story");
-  settings.Add("fight_erhardt", true, "Erhardt", "olberic_story");
-  settings.Add("fight_redhat", true, "Red Hat", "olberic_story");
-  settings.Add("fight_werner", true, "Werner", "olberic_story");
+  settings.Add("olberic_story", true, "Olberic Story");
+  settings.Add("fight_gaston", false, "Gaston", "olberic_story");
+  settings.Add("chapter_end_olberic_1", false, "Chapter 1 End", "olberic_story");
+  settings.Add("fight_victorino", false, "Victorino", "olberic_story");
+  settings.Add("fight_joshua", false, "Joshua", "olberic_story");
+  settings.Add("fight_archibold", false, "Archibold", "olberic_story");
+  settings.Add("fight_gustav", false, "Gustav", "olberic_story");
+  settings.Add("chapter_end_olberic_2", false, "Chapter 2 End", "olberic_story");
+  settings.Add("fight_lizards1", false, "Lizards #1", "olberic_story");
+  settings.Add("fight_lizards2", false, "Lizards #2", "olberic_story");
+  settings.Add("fight_lizardking", false, "Lizardking", "olberic_story");
+  settings.Add("fight_erhardt", false, "Erhardt", "olberic_story");
+  settings.Add("chapter_end_olberic_3", false, "Chapter 3 End", "olberic_story");
+  settings.Add("fight_redhat", false, "Red Hat", "olberic_story");
+  settings.Add("fight_werner", false, "Werner", "olberic_story");
+  settings.Add("chapter_end_olberic_4", false, "Chapter 4 End", "olberic_story");
 
   // Cyrus
-  settings.Add("cyrus_story", false, "Cyrus Story");
-  settings.Add("fight_russell", true, "Russell", "cyrus_story");
-  settings.Add("fight_gideon", true, "Gideon", "cyrus_story");
-  settings.Add("fight_yvon", true, "Yvon", "cyrus_story");
-  settings.Add("fight_lucia", true, "Lucia", "cyrus_story");
+  settings.Add("cyrus_story", true, "Cyrus Story");
+  settings.Add("fight_russell", false, "Russell", "cyrus_story");
+  settings.Add("fight_gideon", false, "Gideon", "cyrus_story");
+  settings.Add("fight_yvon", false, "Yvon", "cyrus_story");
+  settings.Add("fight_lucia", false, "Lucia", "cyrus_story");
 
   // Tressa
-  settings.Add("tressa_story", false, "Tressa Story");
-  settings.Add("fight_mikk_and_makk", true, "Mikk and Makk", "tressa_story");
+  settings.Add("tressa_story", true, "Tressa Story");
+  settings.Add("fight_mikk_and_makk", false, "Mikk and Makk", "tressa_story");
 
   // Galdera
   settings.Add("finis_start", false, "Enter Gate of Finis", "galdera");
@@ -109,121 +150,108 @@ startup
 
 start
 {
-  // return (timer.CurrentPhase == TimerPhase.NotRunning && current.zoneID == 0 && current.start != old.start);
- if(timer.CurrentPhase == TimerPhase.NotRunning && current.start == 2 && old.characterHighlighted == 1 && current.characterHighlighted == 1 && current.zoneID == 0) { return true; }
+  if (timer.CurrentPhase == TimerPhase.NotRunning &&
+      current.start == 2 &&
+      old.characterIsHighlighted == 1 &&
+      current.characterIsHighlighted == 1 &&
+      current.zoneID == 0) {
+    return true;
+  }
+}
+
+reset
+{
+  if (timer.CurrentPhase == TimerPhase.Running &&
+      current.characterIsHighlighted == 1 &&
+      old.characterIsHighlighted == 0 &&
+      current.zoneID == 0) {
+    return true;
+  }
 }
 
 split 
 {
+  // Shrines
+  if (vars.ShrineZoneIDs.ContainsKey(current.zoneID) && current.gameState == 5 && old.gameState == 2) {
+    string getShrineKey = "get_" + vars.NameToKey(vars.ShrineZoneIDs[current.zoneID]);
+    return vars.Split(getShrineKey);
+  }
+
   // Characters
-  if(old.ophiliaHP == 0 && current.ophiliaHP != 0)
-  {
-    if(vars.Splits.Contains("character_ophilia")) { return false; }
-    vars.Splits.Add("character_ophilia");
-    return settings["character_ophilia"];
-  }
-
-  if(old.cyrusHP == 0 && current.cyrusHP != 0) 
-  {
-    if(vars.Splits.Contains("character_cyrus")) { return false; }
-    vars.Splits.Add("character_cyrus");
-    return settings["character_cyrus"];
-  }
-
-  if(old.tressaHP == 0 && current.tressaHP != 0)
-  {
-    if(vars.Splits.Contains("character_tressa")) { return false; }
-    vars.Splits.Add("character_tressa");
-    return settings["character_tressa"];
-  }
-
-  if(old.olbericHP == 0 && current.olbericHP != 0)
-  {
-    if(vars.Splits.Contains("character_olberic")) { return false; }
-    vars.Splits.Add("character_olberic");
-    return settings["character_olberic"];
-  }
-
-  if(old.primroseHP == 0 && current.primroseHP != 0)
-  {
-    if(vars.Splits.Contains("character_primrose")) { return false; }
-    vars.Splits.Add("character_primrose");
-    return settings["character_primrose"];
-  }
-
-  if(old.alfynHP == 0 && current.alfynHP != 0)
-  {
-    if(vars.Splits.Contains("character_alfyn")) { return false; }
-    vars.Splits.Add("character_alfyn");
-    return settings["character_alfyn"];
-  }
-
-  if(old.haanitHP == 0 && current.haanitHP != 0)
-  {
-    if(vars.Splits.Contains("character_haanit")) { return false; }
-    vars.Splits.Add("character_haanit");
-    return settings["character_haanit"];
-  }
-
-  if(old.therionHP == 0 && current.therionHP != 0)
-  {
-    if(vars.Splits.Contains("character_therion")) { return false; }
-    vars.Splits.Add("character_therion");
-    return settings["character_therion"];
-  }
+  if(old.ophiliaHP == 0 && current.ophiliaHP != 0) return vars.Split("character_ophilia");
+  if(old.cyrusHP == 0 && current.cyrusHP != 0) return vars.Split("character_cyrus");
+  if(old.tressaHP == 0 && current.tressaHP != 0) return vars.Split("character_tressa");
+  if(old.olbericHP == 0 && current.olbericHP != 0) return vars.Split("character_olberic");
+  if(old.primroseHP == 0 && current.primroseHP != 0) return vars.Split("character_primrose");
+  if(old.alfynHP == 0 && current.alfynHP != 0) return vars.Split("character_alfyn");
+  if(old.haanitHP == 0 && current.haanitHP != 0) return vars.Split("character_haanit");
+  if(old.therionHP == 0 && current.therionHP != 0) return vars.Split("character_therion");
 
   // Olberic
-  if (old.olbericProgress != current.olbericProgress  && old.zoneID != 0) {
-    if (current.olbericProgress == 160) return settings["fight_gaston"];
-    else if (current.olbericProgress == 1070) return settings["fight_victorino"];
-    else if (current.olbericProgress == 1140) return settings["fight_joshua"];
-    else if (current.olbericProgress == 1180) return settings["fight_archibold"];
-    else if (current.olbericProgress == 1220) return settings["fight_gustav"];
-    else if (current.olbericProgress == 2070) return settings["fight_lizards1"];
-    else if (current.olbericProgress == 2080) return settings["fight_lizards2"];
-    else if (current.olbericProgress == 2110) return settings["fight_lizardking"];
-    else if (current.olbericProgress == 2130) return settings["fight_erhardt"];
-    else if (current.olbericProgress == 3050) return settings["fight_red Hat"];
-    else if (current.olbericProgress == 3110) return settings["fight_werner"];
+  if (old.olbericProgress != current.olbericProgress && old.zoneID != 0) {
+    if (current.olbericProgress == 160) return vars.Split("fight_gaston");
+    else if (current.olbericProgress == 1070) return vars.Split("fight_victorino");
+    else if (current.olbericProgress == 1140) return vars.Split("fight_joshua");
+    else if (current.olbericProgress == 1180) return vars.Split("fight_archibold");
+    else if (current.olbericProgress == 1220) return vars.Split("fight_gustav");
+    else if (current.olbericProgress == 2070) return vars.Split("fight_lizards1");
+    else if (current.olbericProgress == 2080) return vars.Split("fight_lizards2");
+    else if (current.olbericProgress == 2110) return vars.Split("fight_lizardking");
+    else if (current.olbericProgress == 2130) return vars.Split("fight_erhardt");
+    else if (current.olbericProgress == 3050) return vars.Split("fight_red Hat");
+    else if (current.olbericProgress == 3110) return vars.Split("fight_werner");
+    else if (current.olbericProgress % 1000 == 0) {
+      vars.isChapterEnding = true;
+      vars.charChapterEnding = "Olberic";
+    }
+  }
+  if (current.olbericProgress % 1000 == 0 && vars.isChapterEnding && vars.charChapterEnding == "Olberic") {
+    int currentChapter = current.olbericProgress / 1000;
+    string olbericSplitKey = String.Format("chapter_end_olberic_{0}", currentChapter.ToString());
+    if (current.gameState == 2 && old.gameState == 5) {
+      return vars.Split(olbericSplitKey);
+      vars.isChapterEnding = false;
+      vars.charChapterEnding = "";
+    }
   }
 
   // Olphilia
   if (old.ophiliaProgress != current.ophiliaProgress && old.zoneID != 0) {
-    if (current.ophiliaProgress == 170) return settings["fight_guardian"];
-    else if (current.ophiliaProgress == 1140) return settings["fight_hrodvitnir"];
-    else if (current.ophiliaProgress == 2110) return settings["fight_mm_sf"];
-    else if (current.ophiliaProgress == 3090) return settings["fight_cultists"];
-    else if (current.ophiliaProgress == 3150) return settings["fight_mattias"];
+    if (current.ophiliaProgress == 170) return vars.Split("fight_guardian");
+    else if (current.ophiliaProgress == 1140) return vars.Split("fight_hrodvitnir");
+    else if (current.ophiliaProgress == 2110) return vars.Split("fight_mm_sf");
+    else if (current.ophiliaProgress == 3090) return vars.Split("fight_cultists");
+    else if (current.ophiliaProgress == 3150) return vars.Split("fight_mattias");
   }
 
   // Cyrus
   if (old.cyrusProgress != current.cyrusProgress && old.zoneID != 0) {
-    if (current.cyrusProgress == 130) return settings["fight_russell"];
-    else if (current.cyrusProgress == 1110) return settings["fight_gideon"];
-    else if (current.cyrusProgress == 2160) return settings["fight_yvon"];
-    else if (current.cyrusProgress == 3060) return settings["fight_lucia"];
+    if (current.cyrusProgress == 130) return vars.Split("fight_russell");
+    else if (current.cyrusProgress == 1110) return vars.Split("fight_gideon");
+    else if (current.cyrusProgress == 2160) return vars.Split("fight_yvon");
+    else if (current.cyrusProgress == 3060) return vars.Split("fight_lucia");
   }
 
   // Tressa
   if (old.tressaProgress != current.tressaProgress && old.zoneID != 0) {
-    if (current.tressaProgress == 170) return settings["fight_mikk_and_makk"];
+    if (current.tressaProgress == 170) return vars.Split("fight_mikk_and_makk");
   }
 
   // Credits
   else if (current.zoneID == 10 && current.zoneID != old.zoneID) {
-    return settings["credits"];
+    return vars.Split("credits");
   }
 
   // Galdera Splits
   else if (current.zoneID == 195 && old.zoneID == 194) {
-    return settings["finis_start"];
+    return vars.Split("finis_start");
   }
 
   else if (current.zoneID == 196 && old.zoneID == 195) {
-    return settings["journeys_end_start"];
+    return vars.Split("journeys_end_start");
   }
 
   else if (current.zoneID == 194 && current.money - old.money == 100000) {
-    return settings["at_journeys_end"];
+    return vars.Split("at_journeys_end");
   }
 }
