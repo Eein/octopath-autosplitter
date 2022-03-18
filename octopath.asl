@@ -50,8 +50,18 @@ init
   };
   vars.Split = Split;
 
-  vars.isChapterEnding = false;
-  vars.charChapterEnding = "";
+  Func<int,string,string,bool> SplitChapter = (progress, key, name) => {
+    if (progress % 1000 == 0) {
+      int currentChapter = progress / 1000;
+      string splitKey = String.Format("chapter_end_" + key + "{0}", currentChapter.ToString());
+      if(vars.Splits.Contains(splitKey)) { return false; }
+      if (current.gameState == 2 && old.gameState == 5) {
+        return vars.Split(splitKey);
+      }
+    }
+    return false;
+  };
+  vars.SplitChapter = SplitChapter;
 }
 
 update
@@ -145,6 +155,10 @@ startup
   // Tressa
   settings.Add("tressa_story", true, "Tressa Story");
   settings.Add("fight_mikk_and_makk", false, "Mikk and Makk", "tressa_story");
+  settings.Add("chapter_end_tressa_1", false, "Chapter 1 End", "tressa_story");
+  settings.Add("chapter_end_tressa_2", false, "Chapter 2 End", "tressa_story");
+  settings.Add("chapter_end_tressa_3", false, "Chapter 3 End", "tressa_story");
+  settings.Add("chapter_end_tressa_4", false, "Chapter 4 End", "tressa_story");
 
   // Galdera
   settings.Add("galdera", true, "Galdera");
@@ -207,19 +221,7 @@ split
     else if (current.olbericProgress == 2130) return vars.Split("fight_erhardt");
     else if (current.olbericProgress == 3050) return vars.Split("fight_red Hat");
     else if (current.olbericProgress == 3110) return vars.Split("fight_werner");
-    else if (current.olbericProgress % 1000 == 0) {
-      vars.isChapterEnding = true;
-      vars.charChapterEnding = "Olberic";
-    }
-  }
-  if (current.olbericProgress % 1000 == 0 && vars.isChapterEnding && vars.charChapterEnding == "Olberic") {
-    int currentChapter = current.olbericProgress / 1000;
-    string olbericSplitKey = String.Format("chapter_end_olberic_{0}", currentChapter.ToString());
-    if (current.gameState == 2 && old.gameState == 5) {
-      return vars.Split(olbericSplitKey);
-      vars.isChapterEnding = false;
-      vars.charChapterEnding = "";
-    }
+    else { vars.SplitChapter(current.olbericProgress, "olberic", "Olberic"); }
   }
 
   // Olphilia
@@ -229,15 +231,7 @@ split
     else if (current.ophiliaProgress == 2110) return vars.Split("fight_mm_sf");
     else if (current.ophiliaProgress == 3090) return vars.Split("fight_cultists");
     else if (current.ophiliaProgress == 3150) return vars.Split("fight_mattias");
-  }
-  if (current.ophiliaProgress % 1000 == 0 && vars.isChapterEnding && vars.charChapterEnding == "Ophilia") {
-    int currentChapter = current.ophiliaProgress / 1000;
-    string ophiliaSplitKey = String.Format("chapter_end_ophilia_{0}", currentChapter.ToString());
-    if (current.gameState == 2 && old.gameState == 5) {
-      return vars.Split(ophiliaSplitKey);
-      vars.isChapterEnding = false;
-      vars.charChapterEnding = "";
-    }
+    else { vars.SplitChapter(current.ophiliaProgress, "ophilia", "Ophilia"); }
   }
 
   // Cyrus
@@ -246,20 +240,13 @@ split
     else if (current.cyrusProgress == 1110) return vars.Split("fight_gideon");
     else if (current.cyrusProgress == 2160) return vars.Split("fight_yvon");
     else if (current.cyrusProgress == 3060) return vars.Split("fight_lucia");
-  }
-  if (current.cyrusProgress % 1000 == 0 && vars.isChapterEnding && vars.charChapterEnding == "Cyrus") {
-    int currentChapter = current.cyrusProgress / 1000;
-    string cyrusSplitKey = String.Format("chapter_end_cyrus_{0}", currentChapter.ToString());
-    if (current.gameState == 2 && old.gameState == 5) {
-      return vars.Split(cyrusSplitKey);
-      vars.isChapterEnding = false;
-      vars.charChapterEnding = "";
-    }
+    else { vars.SplitChapter(current.cyrusProgress, "cyrus", "Cyrus"); }
   }
 
   // Tressa
   if (old.tressaProgress != current.tressaProgress && old.zoneID != 0) {
     if (current.tressaProgress == 170) return vars.Split("fight_mikk_and_makk");
+    else { vars.SplitChapter(current.tressaProgress, "tressa", "Tressa"); }
   }
 
   // Credits
