@@ -50,14 +50,12 @@ init
   };
   vars.Split = Split;
 
-  Func<int,string,bool> SplitChapter = (progress, key) => {
-    if (progress % 1000 == 0) {
+  Func<int,string,bool> SplitChapter = (progress, name) => {
+    if (progress % 1000 == 0 && current.gameState == 2) {
       int currentChapter = progress / 1000;
-      string splitKey = String.Format("chapter_end_" + key + "_{0}", currentChapter.ToString());
-      if(vars.Splits.Contains(splitKey)) { return false; }
-      if (current.gameState == 2 && old.gameState == 5) {
-        return vars.Split(splitKey);
-      }
+      if (currentChapter == 0) { return false; }
+      string key = String.Format("chapter_end_" + name + "_{0}", currentChapter.ToString());
+      return vars.Split(key);
     }
     return false;
   };
@@ -66,12 +64,7 @@ init
 
 update
 {
-  if (timer.CurrentPhase == TimerPhase.NotRunning)
-  {
-    vars.Splits.Clear();
-    vars.isChapterEnding = false;
-    vars.charChapterEnding = "";
-  }
+  if (timer.CurrentPhase == TimerPhase.NotRunning) { vars.Splits.Clear(); }
 }
 
 startup 
@@ -221,8 +214,8 @@ split
     else if (current.olbericProgress == 2130) return vars.Split("fight_erhardt");
     else if (current.olbericProgress == 3050) return vars.Split("fight_red Hat");
     else if (current.olbericProgress == 3110) return vars.Split("fight_werner");
-    else { vars.SplitChapter(current.olbericProgress, "olberic"); }
   }
+  if (vars.SplitChapter(current.olbericProgress, "olberic")) return true;
 
   // Olphilia
   if (old.ophiliaProgress != current.ophiliaProgress && old.zoneID != 0) {
@@ -231,8 +224,8 @@ split
     else if (current.ophiliaProgress == 2110) return vars.Split("fight_mm_sf");
     else if (current.ophiliaProgress == 3090) return vars.Split("fight_cultists");
     else if (current.ophiliaProgress == 3150) return vars.Split("fight_mattias");
-    else { vars.SplitChapter(current.ophiliaProgress, "ophilia"); }
   }
+  if (vars.SplitChapter(current.ophiliaProgress, "ophilia")) return true;
 
   // Cyrus
   if (old.cyrusProgress != current.cyrusProgress && old.zoneID != 0) {
@@ -240,17 +233,17 @@ split
     else if (current.cyrusProgress == 1110) return vars.Split("fight_gideon");
     else if (current.cyrusProgress == 2160) return vars.Split("fight_yvon");
     else if (current.cyrusProgress == 3060) return vars.Split("fight_lucia");
-    else { vars.SplitChapter(current.cyrusProgress, "cyrus"); }
   }
+  if (vars.SplitChapter(current.cyrusProgress, "cyrus")) return true;
 
   // Tressa
   if (old.tressaProgress != current.tressaProgress && old.zoneID != 0) {
     if (current.tressaProgress == 170) return vars.Split("fight_mikk_and_makk");
-    else { vars.SplitChapter(current.tressaProgress, "tressa"); }
   }
+  if (vars.SplitChapter(current.tressaProgress, "tressa")) return true;
 
   // Credits
-  else if (current.zoneID == 10 && current.zoneID != old.zoneID) {
+  if (current.zoneID == 10 && current.zoneID != old.zoneID) {
     return vars.Split("credits");
   }
 
