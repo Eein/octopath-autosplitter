@@ -1,6 +1,9 @@
 state("Octopath_Traveler-Win64-Shipping")
 {
-  int start: 0x2B3D270, 0x174;
+  // int start: 0x2B3D270, 0x174;
+  int start: 0x2E08100, 0x44;
+  int characterHighlighted: 0x289D268, 0x368, 0x0, 0x328;
+
   int zoneID: 0x289D240, 0x36C;
   int money: 0x0289CC48, 0x370, 0x158;
 
@@ -51,39 +54,39 @@ update
 
 startup 
 {
-  /
-  settings.Add("characters", true, "Characters");
-  settings.Add("character_ophilia", true, "Split on Ophilia", "characters");
-  settings.Add("character_cyrus", true, "Split on Cyrus", "characters");
-  settings.Add("character_tressa", true, "Split on Tressa", "characters");
-  settings.Add("character_olberic", true, "Split on Olberic", "characters");
-  settings.Add("character_primrose", true, "Split on Primrose", "characters");
-  settings.Add("character_alfyn", true, "Split on Alfyn", "characters");
-  settings.Add("character_haanit", true, "Split on H'aanit", "characters");
-  settings.Add("character_therion", true, "Split on Therion", "characters");
+  settings.Add("split_characters", true, "Split On Characters");
+  settings.Add("character_ophilia", false, "Ophilia", "split_characters");
+  settings.Add("character_cyrus", false, "Cyrus", "split_characters");
+  settings.Add("character_tressa", false, "Tressa", "split_characters");
+  settings.Add("character_olberic", false, "Olberic", "split_characters");
+  settings.Add("character_primrose", false, "Primrose", "split_characters");
+  settings.Add("character_alfyn", false, "Alfyn", "split_characters");
+  settings.Add("character_haanit", false, "H'aanit", "split_characters");
+  settings.Add("character_therion", false, "Therion", "split_characters");
 
   settings.Add("galdera", false, "Galdera");
 
   //Ophilia
-  settings.Add("fight_guardian_of_the_lost_flame", true, "Guardian of the First Flame", "character_ophilia");
-  settings.Add("fight_hrodvitnir", true, "Hrodvitnir", "character_ophilia");
-  settings.Add("fight_mm_sf", true, "Mystery Man & Shady Figure", "character_ophilia");
-  settings.Add("fight_cultists", true, "Cultists", "character_ophilia");
-  settings.Add("fight_mattias", true, "Mattias", "character_ophilia");
+  settings.Add("ophilia_story", false, "Ophilia Story");
+  settings.Add("fight_guardian_of_the_lost_flame", true, "Guardian of the First Flame", "ophilia_story");
+  settings.Add("fight_hrodvitnir", true, "Hrodvitnir", "ophilia_story");
+  settings.Add("fight_mm_sf", true, "Mystery Man & Shady Figure", "ophilia_story");
+  settings.Add("fight_cultists", true, "Cultists", "ophilia_story");
+  settings.Add("fight_mattias", true, "Mattias", "ophilia_story");
 
   // Olberic
-  settings.Add("fight_gaston", true, "Gaston", "character_olberic");
-  settings.Add("fight_victorino", true, "Victorino", "character_olberic");
-  settings.Add("fight_joshua", true, "Goshua", "character_olberic");
-  settings.Add("fight_archibold", true, "Archibold", "character_olberic");
-  settings.Add("fight_gustav", true, "Gustav", "character_olberic");
-  settings.Add("fight_lizards1", true, "Lizards #1", "character_olberic");
-  settings.Add("fight_lizards2", true, "Lizards #2", "character_olberic");
-  settings.Add("fight_lizardking", true, "Lizardking", "character_olberic");
-  settings.Add("fight_erhardt", true, "Erhardt", "character_olberic");
-  settings.Add("fight_redhat", true, "Red Hat", "character_olberic");
-  settings.Add("fight_werner", true, "Werner", "character_olberic");
-
+  settings.Add("olberic_story", false, "Olberic Story");
+  settings.Add("fight_gaston", true, "Gaston", "olberic_story");
+  settings.Add("fight_victorino", true, "Victorino", "olberic_story");
+  settings.Add("fight_joshua", true, "Goshua", "olberic_story");
+  settings.Add("fight_archibold", true, "Archibold", "olberic_story");
+  settings.Add("fight_gustav", true, "Gustav", "olberic_story");
+  settings.Add("fight_lizards1", true, "Lizards #1", "olberic_story");
+  settings.Add("fight_lizards2", true, "Lizards #2", "olberic_story");
+  settings.Add("fight_lizardking", true, "Lizardking", "olberic_story");
+  settings.Add("fight_erhardt", true, "Erhardt", "olberic_story");
+  settings.Add("fight_redhat", true, "Red Hat", "olberic_story");
+  settings.Add("fight_werner", true, "Werner", "olberic_story");
 
   // Galdera
   settings.Add("finis_start", false, "Enter Gate of Finis", "galdera");
@@ -96,6 +99,7 @@ startup
 start
 {
   // return (timer.CurrentPhase == TimerPhase.NotRunning && current.zoneID == 0 && current.start != old.start);
+ if(timer.CurrentPhase == TimerPhase.NotRunning && current.start == 2 && old.characterHighlighted == 1 && current.characterHighlighted == 1 && current.zoneID == 0) { return true; }
 }
 
 split 
