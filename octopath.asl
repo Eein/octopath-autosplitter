@@ -104,10 +104,14 @@ startup
   //Ophilia
   settings.Add("ophilia_story", true, "Ophilia Story");
   settings.Add("fight_guardian", false, "Guardian of the First Flame", "ophilia_story");
+  settings.Add("chapter_end_ophilia_1", false, "Chapter 1 End", "ophilia_story");
   settings.Add("fight_hrodvitnir", false, "Hrodvitnir", "ophilia_story");
+  settings.Add("chapter_end_ophilia_2", false, "Chapter 2 End", "ophilia_story");
   settings.Add("fight_mm_sf", false, "Mystery Man & Shady Figure", "ophilia_story");
+  settings.Add("chapter_end_ophilia_3", false, "Chapter 3 End", "ophilia_story");
   settings.Add("fight_cultists", false, "Cultists", "ophilia_story");
   settings.Add("fight_mattias", false, "Mattias", "ophilia_story");
+  settings.Add("chapter_end_ophilia_4", false, "Chapter 4 End", "ophilia_story");
 
   // Olberic
   settings.Add("olberic_story", true, "Olberic Story");
@@ -130,9 +134,13 @@ startup
   // Cyrus
   settings.Add("cyrus_story", true, "Cyrus Story");
   settings.Add("fight_russell", false, "Russell", "cyrus_story");
+  settings.Add("chapter_end_cyrus_1", false, "Chapter 1 End", "cyrus_story");
   settings.Add("fight_gideon", false, "Gideon", "cyrus_story");
+  settings.Add("chapter_end_cyrus_2", false, "Chapter 2 End", "cyrus_story");
   settings.Add("fight_yvon", false, "Yvon", "cyrus_story");
+  settings.Add("chapter_end_cyrus_3", false, "Chapter 3 End", "cyrus_story");
   settings.Add("fight_lucia", false, "Lucia", "cyrus_story");
+  settings.Add("chapter_end_cyrus_4", false, "Chapter 4 End", "cyrus_story");
 
   // Tressa
   settings.Add("tressa_story", true, "Tressa Story");
@@ -222,6 +230,15 @@ split
     else if (current.ophiliaProgress == 3090) return vars.Split("fight_cultists");
     else if (current.ophiliaProgress == 3150) return vars.Split("fight_mattias");
   }
+  if (current.ophiliaProgress % 1000 == 0 && vars.isChapterEnding && vars.charChapterEnding == "Ophilia") {
+    int currentChapter = current.ophiliaProgress / 1000;
+    string ophiliaSplitKey = String.Format("chapter_end_ophilia_{0}", currentChapter.ToString());
+    if (current.gameState == 2 && old.gameState == 5) {
+      return vars.Split(ophiliaSplitKey);
+      vars.isChapterEnding = false;
+      vars.charChapterEnding = "";
+    }
+  }
 
   // Cyrus
   if (old.cyrusProgress != current.cyrusProgress && old.zoneID != 0) {
@@ -229,6 +246,15 @@ split
     else if (current.cyrusProgress == 1110) return vars.Split("fight_gideon");
     else if (current.cyrusProgress == 2160) return vars.Split("fight_yvon");
     else if (current.cyrusProgress == 3060) return vars.Split("fight_lucia");
+  }
+  if (current.cyrusProgress % 1000 == 0 && vars.isChapterEnding && vars.charChapterEnding == "Cyrus") {
+    int currentChapter = current.cyrusProgress / 1000;
+    string cyrusSplitKey = String.Format("chapter_end_cyrus_{0}", currentChapter.ToString());
+    if (current.gameState == 2 && old.gameState == 5) {
+      return vars.Split(cyrusSplitKey);
+      vars.isChapterEnding = false;
+      vars.charChapterEnding = "";
+    }
   }
 
   // Tressa
