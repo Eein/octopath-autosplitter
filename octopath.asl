@@ -6,6 +6,7 @@ state("Octopath_Traveler-Win64-Shipping")
   int zoneID: 0x289D240, 0x36C;
   int money: 0x0289CC48, 0x370, 0x158;
   int gameState: 0x0289D270, 0x36C;
+  int cutsceneProgressBar: 0x29E3A10, 0x20, 0x1C8;
 
   int ophiliaProgress: 0x0289CC48, 0x370, 0x1C8, 0x510;
   int cyrusProgress: 0x0289CC48, 0x370, 0x1C8, 0x1f0;
@@ -50,11 +51,30 @@ init
   };
   vars.Split = Split;
 
-  Func<int,string,bool> SplitChapter = (progress, name) => {
-    if (progress % 1000 == 0 && current.gameState == 2) {
+  vars.isChapterEnding = false;
+  vars.charChapterEnding = "";
+
+  // bool return doesnt do anything, i just dont know how to make a lambda without a return lol
+  Func<string,bool> SetCharacterEnding = (character) => {
+    vars.isChapterEnding = true;
+    vars.charChapterEnding = character;
+    return false;
+  };
+  // same here
+  Func<bool> ClearCharacterEnding = () => {
+    vars.isChapterEnding = false;
+    vars.charChapterEnding = "";
+    return false;
+  };
+  vars.SetCharacterEnding = SetCharacterEnding;
+  vars.ClearCharacterEnding = ClearCharacterEnding;
+
+  Func<int,int,int,bool> SplitChapter = (progress, curGameState, oldGameState) => {
+    if (progress % 1000 == 0 && vars.isChapterEnding && curGameState == 2 && oldGameState == 5) {
       int currentChapter = progress / 1000;
       if (currentChapter == 0) { return false; }
-      string key = String.Format("chapter_end_" + name + "_{0}", currentChapter.ToString());
+      string key = String.Format("chapter_end_" + vars.charChapterEnding.ToLower() + "_" + currentChapter.ToString());
+      ClearCharacterEnding();
       return vars.Split(key);
     }
     return false;
@@ -64,7 +84,10 @@ init
 
 update
 {
-  if (timer.CurrentPhase == TimerPhase.NotRunning) { vars.Splits.Clear(); }
+  if (timer.CurrentPhase == TimerPhase.NotRunning) {
+    vars.Splits.Clear();
+    vars.ClearCharacterEnding();
+  }
 }
 
 startup 
@@ -94,6 +117,7 @@ startup
       "get_shrine"
     );
   }
+
   settings.Add("split_characters", true, "Split On Characters");
   settings.Add("character_ophilia", false, "Ophilia", "split_characters");
   settings.Add("character_cyrus", false, "Cyrus", "split_characters");
@@ -202,7 +226,7 @@ split
   if(old.therionHP == 0 && current.therionHP != 0) return vars.Split("character_therion");
 
   // Olberic
-  if (old.olbericProgress != current.olbericProgress && old.zoneID != 0) {
+  if (old.olbericProgress < current.olbericProgress && old.zoneID != 0) {
     if (current.olbericProgress == 160) return vars.Split("fight_gaston");
     else if (current.olbericProgress == 1070) return vars.Split("fight_victorino");
     else if (current.olbericProgress == 1140) return vars.Split("fight_joshua");
@@ -214,18 +238,24 @@ split
     else if (current.olbericProgress == 2130) return vars.Split("fight_erhardt");
     else if (current.olbericProgress == 3050) return vars.Split("fight_red Hat");
     else if (current.olbericProgress == 3110) return vars.Split("fight_werner");
+    else if (current.olbericProgress % 1000 == 0) {
+      vars.isChapterEnding = true;
+      vars.charChapterEnding = "Olberic";
+    }
   }
-  if (vars.SplitChapter(current.olbericProgress, "olberic")) return true;
 
   // Olphilia
-  if (old.ophiliaProgress != current.ophiliaProgress && old.zoneID != 0) {
+  if (old.ophiliaProgress < current.ophiliaProgress && old.zoneID != 0) {
     if (current.ophiliaProgress == 170) return vars.Split("fight_guardian");
     else if (current.ophiliaProgress == 1140) return vars.Split("fight_hrodvitnir");
     else if (current.ophiliaProgress == 2110) return vars.Split("fight_mm_sf");
     else if (current.ophiliaProgress == 3090) return vars.Split("fight_cultists");
     else if (current.ophiliaProgress == 3150) return vars.Split("fight_mattias");
+    else if (current.ophiliaProgress % 1000 == 0) {
+      vars.isChapterEnding = true;
+      vars.charChapterEnding = "Ophilia";
+    }
   }
-  if (vars.SplitChapter(current.ophiliaProgress, "ophilia")) return true;
 
   // Cyrus
   if (old.cyrusProgress != current.cyrusProgress && old.zoneID != 0) {
@@ -233,17 +263,37 @@ split
     else if (current.cyrusProgress == 1110) return vars.Split("fight_gideon");
     else if (current.cyrusProgress == 2160) return vars.Split("fight_yvon");
     else if (current.cyrusProgress == 3060) return vars.Split("fight_lucia");
+    else if (current.cyrusProgress == 3060) return vars.Split("fight_lucia");
+    else if (current.ophiliaProgress % 1000 == 0) {
+      vars.isChapterEnding = true;
+      vars.charChapterEnding = "Cyrus";
+    }
   }
-  if (vars.SplitChapter(current.cyrusProgress, "cyrus")) return true;
 
   // Tressa
   if (old.tressaProgress != current.tressaProgress && old.zoneID != 0) {
     if (current.tressaProgress == 170) return vars.Split("fight_mikk_and_makk");
+    else if (current.ophiliaProgress % 1000 == 0) {
+      vars.isChapterEnding = true;
+      vars.charChapterEnding = "Cyrus";
+    }
   }
-  if (vars.SplitChapter(current.tressaProgress, "tressa")) return true;
+
+  if (vars.isChapterEnding) {
+    int progress = 0;
+    if (vars.charChapterEnding == "Ophilia") progress = current.ophiliaProgress;
+    if (vars.charChapterEnding == "Cyrus") progress = current.cyrusProgress;
+    if (vars.charChapterEnding == "Tressa") progress = current.tressaProgress;
+    if (vars.charChapterEnding == "Olberic") progress = current.olbericProgress;
+    if (vars.charChapterEnding == "Primrose") progress = current.primroseProgress;
+    if (vars.charChapterEnding == "Alfyn") progress = current.alfynProgress;
+    if (vars.charChapterEnding == "Therion") progress = current.therionProgress;
+    if (vars.charChapterEnding == "Haanit") progress = current.haanitProgress;
+    if (vars.SplitChapter(progress, current.gameState, old.gameState)) return true;
+  }
 
   // Credits
-  if (current.zoneID == 10 && current.zoneID != old.zoneID) {
+  else if (current.zoneID == 10 && current.zoneID != old.zoneID) {
     return vars.Split("credits");
   }
 
