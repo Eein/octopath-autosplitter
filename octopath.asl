@@ -254,6 +254,17 @@ startup
   settings.Add("fight_simeon2", false, "Simeon 2", "primrose_story");
   settings.Add("chapter_end_primrose_4", false, "Chapter 4 End", "primrose_story");
 
+  // Alfyn
+  settings.Add("alfyn_story", true, "Alfyn Story");
+  settings.Add("fight_blotted_viper", false, "Blotted Viper", "alfyn_story");
+  settings.Add("chapter_end_alfyn_1", false, "Chapter 1 End", "alfyn_story");
+  settings.Add("fight_vanessa", false, "Vanessa", "alfyn_story");
+  settings.Add("chapter_end_alfyn_2", false, "Chapter 2 End", "alfyn_story");
+  settings.Add("fight_miguel", false, "Miguel", "alfyn_story");
+  settings.Add("chapter_end_alfyn_3", false, "Chapter 3 End", "alfyn_story");
+  settings.Add("fight_ogre_eagle", false, "Ogre Eagle", "alfyn_story");
+  settings.Add("chapter_end_alfyn_4", false, "Chapter 4 End", "alfyn_story");
+
   // Therion
   settings.Add("therion_story", true, "Therion Story");
   settings.Add("fight_heathecote", false, "Heathecote", "therion_story");
@@ -444,6 +455,24 @@ split
     return vars.Split("ending_split");
   }
 
+  // Alfyn
+  if (old.alfynProgress != current.alfynProgress && old.zoneID != 0) {
+    if (current.alfynProgress == 90) return vars.Split("fight_blotted_viper");
+    else if (current.alfynProgress == 1130) return vars.Split("fight_vanessa");
+    else if (current.alfynProgress == 2140) return vars.Split("fight_miguel");
+    else if (current.alfynProgress == 3240) return vars.Split("fight_ogre_eagle");
+    else if (current.alfynProgress % 1000 == 0) {
+      vars.isChapterEnding = true;
+      vars.charChapterEnding = "Alfyn";
+    }
+  }
+  
+  // Alfyn Ending
+  if (current.alfynProgress == 3300 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 93)) {
+    return vars.Split("ending_split");
+  }
+
+
   // Therion
   if (old.therionProgress != current.therionProgress && old.zoneID != 0) {
     if (current.therionProgress == 140) return vars.Split("fight_heathecote");
@@ -478,12 +507,11 @@ split
       vars.charChapterEnding = "Haanit";
     }
   }
-
-
-
-
-
-
+  
+  // H'aanit Ending
+  if (current.haanitProgress == 3140 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 195)) {
+    return vars.Split("ending_split");
+  }
 
   // All Character Chapter Ends
   if (vars.isChapterEnding) {
