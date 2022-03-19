@@ -9,9 +9,8 @@ state("Octopath_Traveler-Win64-Shipping")
   int cutsceneScriptIndex: 0x289D230, 0x388;
 
   
-  float cutsceneProgressBar: 0x0289D268, 0x378, 0x20, 0x230, 0xD0, 0x350;
-  float cutsceneProgressBar2: 0x0289D268, 0x378, 0x20, 0x230, 0x288;
-
+  // Works but other is better? float cutsceneProgressBar: 0x0289D268, 0x378, 0x20, 0x230, 0xD0, 0x350;
+  float cutsceneProgressBar: 0x0289D268, 0x378, 0x20, 0x230, 0x288;
 
   int ophiliaProgress: 0x0289CC48, 0x370, 0x1C8, 0x510;
   int cyrusProgress: 0x0289CC48, 0x370, 0x1C8, 0x1f0;
@@ -97,6 +96,125 @@ update
 
 startup 
 {
+
+  // Character Story Endings
+  settings.Add("character_story_endings", true, "Character Story Endings");
+  settings.SetToolTip("character_story_endings", "Split on final cutscene final input before credits. IF more than 1 Ch.4 completed in category, ONLY ENABLE THE FINAL CH4 CHARACTER.");
+  settings.Add("character_story_endings_ophilia", false, "Ophilia Story Ending", "character_story_endings");
+  settings.Add("character_story_endings_cyrus", false, "Cyrus Story Ending", "character_story_endings");
+  settings.Add("character_story_endings_tressa", false, "Tressa Story Ending", "character_story_endings");
+  settings.Add("character_story_endings_olberic", false, "Olberic Story Ending", "character_story_endings");
+  settings.Add("character_story_endings_primrose", false, "Primrose Story Ending", "character_story_endings");
+  settings.Add("character_story_endings_alfyn", false, "Alfyn Story Ending", "character_story_endings");
+  settings.Add("character_story_endings_therion", false, "Therion Story Ending", "character_story_endings");
+  settings.Add("character_story_endings_haanit", false, "H'aanit Story Ending", "character_story_endings");
+
+  settings.Add("character_stories", true, "Character Stories");
+  settings.SetToolTip("character_stories", "Splits for fights & events in character stories.");
+  
+  // Ophilia
+  settings.Add("ophilia_story", true, "Ophilia Story", "character_stories");
+  settings.Add("fight_guardian", false, "Guardian of the First Flame", "ophilia_story");
+  settings.Add("chapter_end_ophilia_1", false, "Chapter 1 End", "ophilia_story");
+  settings.Add("fight_hrodvitnir", false, "Hrodvitnir", "ophilia_story");
+  settings.Add("chapter_end_ophilia_2", false, "Chapter 2 End", "ophilia_story");
+  settings.Add("fight_mm_sf", false, "Mystery Man & Shady Figure", "ophilia_story");
+  settings.Add("chapter_end_ophilia_3", false, "Chapter 3 End", "ophilia_story");
+  settings.Add("fight_cultists", false, "Cultists", "ophilia_story");
+  settings.Add("fight_mattias", false, "Mattias", "ophilia_story");
+  settings.Add("chapter_end_ophilia_4", false, "Chapter 4 End", "ophilia_story");
+
+  // Cyrus
+  settings.Add("cyrus_story", true, "Cyrus Story", "character_stories");
+  settings.Add("fight_russell", false, "Russell", "cyrus_story");
+  settings.Add("chapter_end_cyrus_1", false, "Chapter 1 End", "cyrus_story");
+  settings.Add("fight_gideon", false, "Gideon", "cyrus_story");
+  settings.Add("chapter_end_cyrus_2", false, "Chapter 2 End", "cyrus_story");
+  settings.Add("fight_yvon", false, "Yvon", "cyrus_story");
+  settings.Add("chapter_end_cyrus_3", false, "Chapter 3 End", "cyrus_story");
+  settings.Add("fight_lucia", false, "Lucia", "cyrus_story");
+  settings.Add("chapter_end_cyrus_4", false, "Chapter 4 End", "cyrus_story");
+
+  // Tressa
+  settings.Add("tressa_story", true, "Tressa Story", "character_stories");
+  settings.Add("fight_mikk_makk", false, "Mikk & Makk", "tressa_story");
+  settings.Add("chapter_end_tressa_1", false, "Chapter 1 End", "tressa_story");
+  settings.Add("fight_omar", false, "Omar", "tressa_story");
+  settings.Add("chapter_end_tressa_2", false, "Chapter 2 End", "tressa_story");
+  settings.Add("fight_venomtooth_tiger", false, "Venomtooth Tiger", "tressa_story");
+  settings.Add("chapter_end_tressa_3", false, "Chapter 3 End", "tressa_story");
+  settings.Add("fight_esmeralda", false, "Esmeralda", "tressa_story");
+  settings.Add("chapter_end_tressa_4", false, "Chapter 4 End", "tressa_story");
+
+  // Olberic
+  settings.Add("olberic_story", true, "Olberic Story", "character_stories");
+  settings.Add("fight_gaston", false, "Gaston", "olberic_story");
+  settings.Add("chapter_end_olberic_1", false, "Chapter 1 End", "olberic_story");
+  settings.Add("fight_victorino", false, "Victorino", "olberic_story");
+  settings.Add("fight_joshua", false, "Joshua", "olberic_story");
+  settings.Add("fight_archibold", false, "Archibold", "olberic_story");
+  settings.Add("fight_gustav", false, "Gustav", "olberic_story");
+  settings.Add("chapter_end_olberic_2", false, "Chapter 2 End", "olberic_story");
+  settings.Add("fight_lizards1", false, "Lizards #1", "olberic_story");
+  settings.Add("fight_lizards2", false, "Lizards #2", "olberic_story");
+  settings.Add("fight_lizardking", false, "Lizardking", "olberic_story");
+  settings.Add("fight_erhardt", false, "Erhardt", "olberic_story");
+  settings.Add("chapter_end_olberic_3", false, "Chapter 3 End", "olberic_story");
+  settings.Add("fight_redhat", false, "Red Hat", "olberic_story");
+  settings.Add("fight_werner", false, "Werner", "olberic_story");
+  settings.Add("chapter_end_olberic_4", false, "Chapter 4 End", "olberic_story");
+
+  // Primrose
+  settings.Add("primrose_story", true, "Primrose Story", "character_stories");
+  settings.Add("fight_helgenish", false, "Helgenish", "primrose_story");
+  settings.Add("chapter_end_primrose_1", false, "Chapter 1 End", "primrose_story");
+  settings.Add("fight_rufus", false, "Rufus", "primrose_story");
+  settings.Add("chapter_end_primrose_2", false, "Chapter 2 End", "primrose_story");
+  settings.Add("fight_albus", false, "Albus", "primrose_story");
+  settings.Add("chapter_end_primrose_3", false, "Chapter 3 End", "primrose_story");
+  settings.Add("fight_simeon1", false, "Simeon 1", "primrose_story");
+  settings.Add("fight_simeon2", false, "Simeon 2", "primrose_story");
+  settings.Add("chapter_end_primrose_4", false, "Chapter 4 End", "primrose_story");
+
+  // Alfyn
+  settings.Add("alfyn_story", true, "Alfyn Story", "character_stories");
+  settings.Add("fight_blotted_viper", false, "Blotted Viper", "alfyn_story");
+  settings.Add("chapter_end_alfyn_1", false, "Chapter 1 End", "alfyn_story");
+  settings.Add("fight_vanessa", false, "Vanessa", "alfyn_story");
+  settings.Add("chapter_end_alfyn_2", false, "Chapter 2 End", "alfyn_story");
+  settings.Add("fight_miguel", false, "Miguel", "alfyn_story");
+  settings.Add("chapter_end_alfyn_3", false, "Chapter 3 End", "alfyn_story");
+  settings.Add("fight_ogre_eagle", false, "Ogre Eagle", "alfyn_story");
+  settings.Add("chapter_end_alfyn_4", false, "Chapter 4 End", "alfyn_story");
+
+  // Therion
+  settings.Add("therion_story", true, "Therion Story", "character_stories");
+  settings.Add("fight_heathecote", false, "Heathecote", "therion_story");
+  settings.Add("chapter_end_therion_1", false, "Chapter 1 End", "therion_story");
+  settings.Add("fight_orlick", false, "Orlick", "therion_story");
+  settings.Add("chapter_end_therion_2", false, "Chapter 2 End", "therion_story");
+  settings.Add("fight_darius_henchmen", false, "Darius's Henchmen", "therion_story");
+  settings.Add("fight_gareth", false, "Gareth", "therion_story");
+  settings.Add("chapter_end_therion_3", false, "Chapter 3 End", "therion_story");
+  settings.Add("fight_darius_underlings", false, "Darius's Underlings", "therion_story");
+  settings.Add("3_percent_steal", false, "3% Steal", "therion_story");
+  settings.Add("fight_darius", false, "Darius", "therion_story");
+  settings.Add("chapter_end_therion_4", false, "Chapter 4 End", "therion_story");
+
+  // H'aanit
+  settings.Add("haanit_story", true, "H'aanit Story", "character_stories");
+  settings.Add("fight_ghisarma", false, "Ghisarma", "haanit_story");
+  settings.Add("chapter_end_haanit_1", false, "Chapter 1 End", "haanit_story");
+  settings.Add("fight_nathans_bodyguard", false, "Nathan's Bodyguard", "haanit_story");
+  settings.Add("fight_ancient_one", false, "Ancient One", "haanit_story");
+  settings.Add("fight_lord_of_the_forest", false, "Lord of the Forest", "haanit_story");
+  settings.Add("chapter_end_haanit_2", false, "Chapter 2 End", "haanit_story");
+  settings.Add("fight_alaic", false, "Alaic", "haanit_story");
+  settings.Add("fight_dragon", false, "Dragon", "haanit_story");
+  settings.Add("chapter_end_haanit_3", false, "Chapter 3 End", "haanit_story");
+  settings.Add("fight_redeye", false, "Redeye", "haanit_story");
+  settings.Add("chapter_end_haanit_4", false, "Chapter 4 End", "haanit_story");
+  
   Func<string,string> NameToKey = (name) => {
     return name.ToLower().Replace(' ', '_').Replace("'", "");
   };
@@ -113,14 +231,10 @@ startup
     { 186, "Hunter Shrine" }
   };
 
-  settings.Add("get_shrine", true, "Get Shrine");
+  settings.Add("get_shrine", true, "Get Shrines");
+  settings.SetToolTip("get_shrine", "Split on getting Job from Shrine.");
   foreach (var shrineName in vars.ShrineZoneIDs.Values) {
-    settings.Add(
-      String.Format("get_{0}", NameToKey(shrineName)),
-      false,
-      String.Format("Get {0}", shrineName),
-      "get_shrine"
-    );
+    settings.Add("get_" + NameToKey(shrineName), false, "Get " + shrineName, "get_shrine");
   }
 
   // After finishing advanced job fight state goes from 6 to 5
@@ -132,6 +246,7 @@ startup
   };
 
   settings.Add("advanced_job_fights", true, "Advanced Job Fights");
+  settings.SetToolTip("advanced_job_fights", "Split after defeating boss.");
   foreach (var fight in vars.AdvancedJobFights.Values) {
     settings.Add("advanced_job_fight_" + NameToKey(fight), true, fight, "advanced_job_fights");
   }
@@ -173,6 +288,8 @@ startup
   };
 
   settings.Add("enter_exit_area", true, "Enter / Exit area");
+  settings.SetToolTip("enter_exit_area", "Split on entering and/or exiting an area.");
+
   foreach (var areaName in vars.AreaZoneIDs.Values) {
     string areaKey = NameToKey(areaName);
     settings.Add(areaKey, true, areaName, "enter_exit_area");
@@ -180,7 +297,8 @@ startup
     settings.Add("exit_" + areaKey, false, "Exit", areaKey);
   }
 
-  settings.Add("split_characters", true, "Split On Characters");
+  settings.Add("split_characters", false, "Split On Characters");
+  settings.SetToolTip("split_characters", "Split on Character joining party (as soon as you say yes).");
   settings.Add("character_ophilia", false, "Ophilia", "split_characters");
   settings.Add("character_cyrus", false, "Cyrus", "split_characters");
   settings.Add("character_tressa", false, "Tressa", "split_characters");
@@ -190,118 +308,17 @@ startup
   settings.Add("character_haanit", false, "H'aanit", "split_characters");
   settings.Add("character_therion", false, "Therion", "split_characters");
 
-  // Ophilia
-  settings.Add("ophilia_story", true, "Ophilia Story");
-  settings.Add("fight_guardian", false, "Guardian of the First Flame", "ophilia_story");
-  settings.Add("chapter_end_ophilia_1", false, "Chapter 1 End", "ophilia_story");
-  settings.Add("fight_hrodvitnir", false, "Hrodvitnir", "ophilia_story");
-  settings.Add("chapter_end_ophilia_2", false, "Chapter 2 End", "ophilia_story");
-  settings.Add("fight_mm_sf", false, "Mystery Man & Shady Figure", "ophilia_story");
-  settings.Add("chapter_end_ophilia_3", false, "Chapter 3 End", "ophilia_story");
-  settings.Add("fight_cultists", false, "Cultists", "ophilia_story");
-  settings.Add("fight_mattias", false, "Mattias", "ophilia_story");
-  settings.Add("chapter_end_ophilia_4", false, "Chapter 4 End", "ophilia_story"); 
-
-  // Cyrus
-  settings.Add("cyrus_story", true, "Cyrus Story");
-  settings.Add("fight_russell", false, "Russell", "cyrus_story");
-  settings.Add("chapter_end_cyrus_1", false, "Chapter 1 End", "cyrus_story");
-  settings.Add("fight_gideon", false, "Gideon", "cyrus_story");
-  settings.Add("chapter_end_cyrus_2", false, "Chapter 2 End", "cyrus_story");
-  settings.Add("fight_yvon", false, "Yvon", "cyrus_story");
-  settings.Add("chapter_end_cyrus_3", false, "Chapter 3 End", "cyrus_story");
-  settings.Add("fight_lucia", false, "Lucia", "cyrus_story");
-  settings.Add("chapter_end_cyrus_4", false, "Chapter 4 End", "cyrus_story");
-
-  // Tressa
-  settings.Add("tressa_story", true, "Tressa Story");
-  settings.Add("fight_mikk_makk", false, "Mikk & Makk", "tressa_story");
-  settings.Add("chapter_end_tressa_1", false, "Chapter 1 End", "tressa_story");
-  settings.Add("fight_omar", false, "Omar", "tressa_story");
-  settings.Add("chapter_end_tressa_2", false, "Chapter 2 End", "tressa_story");
-  settings.Add("fight_venomtooth_tiger", false, "Venomtooth Tiger", "tressa_story");
-  settings.Add("chapter_end_tressa_3", false, "Chapter 3 End", "tressa_story");
-  settings.Add("fight_esmeralda", false, "Esmeralda", "tressa_story");
-  settings.Add("chapter_end_tressa_4", false, "Chapter 4 End", "tressa_story");
-
-  // Olberic
-  settings.Add("olberic_story", true, "Olberic Story");
-  settings.Add("fight_gaston", false, "Gaston", "olberic_story");
-  settings.Add("chapter_end_olberic_1", false, "Chapter 1 End", "olberic_story");
-  settings.Add("fight_victorino", false, "Victorino", "olberic_story");
-  settings.Add("fight_joshua", false, "Joshua", "olberic_story");
-  settings.Add("fight_archibold", false, "Archibold", "olberic_story");
-  settings.Add("fight_gustav", false, "Gustav", "olberic_story");
-  settings.Add("chapter_end_olberic_2", false, "Chapter 2 End", "olberic_story");
-  settings.Add("fight_lizards1", false, "Lizards #1", "olberic_story");
-  settings.Add("fight_lizards2", false, "Lizards #2", "olberic_story");
-  settings.Add("fight_lizardking", false, "Lizardking", "olberic_story");
-  settings.Add("fight_erhardt", false, "Erhardt", "olberic_story");
-  settings.Add("chapter_end_olberic_3", false, "Chapter 3 End", "olberic_story");
-  settings.Add("fight_redhat", false, "Red Hat", "olberic_story");
-  settings.Add("fight_werner", false, "Werner", "olberic_story");
-  settings.Add("chapter_end_olberic_4", false, "Chapter 4 End", "olberic_story");
-
-  // Primrose
-  settings.Add("primrose_story", true, "Primrose Story");
-  settings.Add("fight_helgenish", false, "Helgenish", "primrose_story");
-  settings.Add("chapter_end_primrose_1", false, "Chapter 1 End", "primrose_story");
-  settings.Add("fight_rufus", false, "Rufus", "primrose_story");
-  settings.Add("chapter_end_primrose_2", false, "Chapter 2 End", "primrose_story");
-  settings.Add("fight_albus", false, "Albus", "primrose_story");
-  settings.Add("chapter_end_primrose_3", false, "Chapter 3 End", "primrose_story");
-  settings.Add("fight_simeon1", false, "Simeon 1", "primrose_story");
-  settings.Add("fight_simeon2", false, "Simeon 2", "primrose_story");
-  settings.Add("chapter_end_primrose_4", false, "Chapter 4 End", "primrose_story");
-
-  // Alfyn
-  settings.Add("alfyn_story", true, "Alfyn Story");
-  settings.Add("fight_blotted_viper", false, "Blotted Viper", "alfyn_story");
-  settings.Add("chapter_end_alfyn_1", false, "Chapter 1 End", "alfyn_story");
-  settings.Add("fight_vanessa", false, "Vanessa", "alfyn_story");
-  settings.Add("chapter_end_alfyn_2", false, "Chapter 2 End", "alfyn_story");
-  settings.Add("fight_miguel", false, "Miguel", "alfyn_story");
-  settings.Add("chapter_end_alfyn_3", false, "Chapter 3 End", "alfyn_story");
-  settings.Add("fight_ogre_eagle", false, "Ogre Eagle", "alfyn_story");
-  settings.Add("chapter_end_alfyn_4", false, "Chapter 4 End", "alfyn_story");
-
-  // Therion
-  settings.Add("therion_story", true, "Therion Story");
-  settings.Add("fight_heathecote", false, "Heathecote", "therion_story");
-  settings.Add("chapter_end_therion_1", false, "Chapter 1 End", "therion_story");
-  settings.Add("fight_orlick", false, "Orlick", "therion_story");
-  settings.Add("chapter_end_therion_2", false, "Chapter 2 End", "therion_story");
-  settings.Add("fight_darius_henchmen", false, "Darius's Henchmen", "therion_story");
-  settings.Add("fight_gareth", false, "Gareth", "therion_story");
-  settings.Add("chapter_end_therion_3", false, "Chapter 3 End", "therion_story");
-  settings.Add("fight_darius_underlings", false, "Darius's Underlings", "therion_story");
-  settings.Add("3_percent_steal", false, "3% Steal", "therion_story");
-  settings.Add("fight_darius", false, "Darius", "therion_story");
-  settings.Add("chapter_end_therion_4", false, "Chapter 4 End", "therion_story");
-
-  // H'aanit
-  settings.Add("haanit_story", true, "H'aanit Story");
-  settings.Add("fight_ghisarma", false, "Ghisarma", "haanit_story");
-  settings.Add("chapter_end_haanit_1", false, "Chapter 1 End", "haanit_story");
-  settings.Add("fight_nathans_bodyguard", false, "Nathan's Bodyguard", "haanit_story");
-  settings.Add("fight_ancient_one", false, "Ancient One", "haanit_story");
-  settings.Add("fight_lord_of_the_forest", false, "Lord of the Forest", "haanit_story");
-  settings.Add("chapter_end_haanit_2", false, "Chapter 2 End", "haanit_story");
-  settings.Add("fight_alaic", false, "Alaic", "haanit_story");
-  settings.Add("fight_dragon", false, "Dragon", "haanit_story");
-  settings.Add("chapter_end_haanit_3", false, "Chapter 3 End", "haanit_story");
-  settings.Add("fight_redeye", false, "Redeye", "haanit_story");
-  settings.Add("chapter_end_haanit_4", false, "Chapter 4 End", "haanit_story");
-
   // Galdera
   settings.Add("galdera", true, "Galdera");
+  settings.SetToolTip("galdera", "Galdera Splits.");
+
   settings.Add("finis_start", false, "Enter Gate of Finis", "galdera");
   settings.Add("journeys_end_start", false, "Enter Journey's End", "galdera");
   settings.Add("at_journeys_end", false, "Galdera End", "galdera");
+  settings.SetToolTip("at_journeys_end", "Split on category end (get Spurning Ribbon)");
 
-  settings.Add("ending_split", true, "Ending Split");
-  settings.Add("credits", true, "Credits");
-
+  settings.Add("credits", false, "Credits");
+  settings.SetToolTip("credits", "Split on Credits Start. Slightly late for ending on final cutscene before credits.");
 }
 
 start
@@ -374,7 +391,7 @@ split
 
   // Ophilia Ending
   if (current.ophiliaProgress == 3160 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 94)) {
-    return vars.Split("ending_split");
+    return vars.Split("character_story_endings_ophilia");
   }
 
   // Cyrus
@@ -393,7 +410,7 @@ split
   if (current.cyrusProgress == 3110 &&
     current.cutsceneScriptIndex >= 138 &&
     current.cutsceneProgressBar > 0.98) {
-      return vars.Split("ending_split");
+      return vars.Split("character_story_endings_cyrus");
   }
 
   // Tressa
@@ -410,7 +427,7 @@ split
 
   // Tressa Ending
   if (current.tressaProgress == 3180 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 209)) {
-    return vars.Split("ending_split");
+    return vars.Split("character_story_endings_tressa");
   }
 
   // Primrose
@@ -428,7 +445,7 @@ split
 
   // Primrose Ending
   if (current.primroseProgress == 3150 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 94)) {
-    return vars.Split("ending_split");
+    return vars.Split("character_story_endings_primrose");
   }
 
   // Olberic
@@ -452,7 +469,7 @@ split
 
   // Olberic Ending
   if (current.olbericProgress == 3120 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 174)) {
-    return vars.Split("ending_split");
+    return vars.Split("character_story_endings_olberic");
   }
 
   // Alfyn
@@ -469,7 +486,7 @@ split
   
   // Alfyn Ending
   if (current.alfynProgress == 3300 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 93)) {
-    return vars.Split("ending_split");
+    return vars.Split("character_story_endings_alfyn");
   }
 
 
@@ -490,7 +507,7 @@ split
 
   // Therion Ending
   if (current.therionProgress == 3200 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 275)) {
-    return vars.Split("ending_split");
+    return vars.Split("character_story_endings_therion");
   }
 
   // H'aanit
@@ -510,7 +527,7 @@ split
   
   // H'aanit Ending
   if (current.haanitProgress == 3140 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 195)) {
-    return vars.Split("ending_split");
+    return vars.Split("character_story_endings_haanit");
   }
 
   // All Character Chapter Ends
