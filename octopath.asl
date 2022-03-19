@@ -119,7 +119,7 @@ startup
     );
   }
 
-  vars.TownZoneIDs = new Dictionary<int, string> {
+  vars.AreaZoneIDs = new Dictionary<int, string> {
     { 137, "Flamesgrace" },
     { 76, "Atlasdam" },
     { 114, "Rippletide" },
@@ -144,17 +144,23 @@ startup
     { 70, "Riverford" },
     { 108, "Orewell" },
     { 171, "Duskbarrow" },
-    { 194, "Ruins of Hornburg" }
+    { 194, "Ruins of Hornburg" },
+    { 93, "Forest of Purgation" },
+    { 136, "Loch of the Lost King" },
+    { 33, "Everhold Tunnels" },
+    { 188, "Shrine of the Runeblade" },
+    { 55, "Marsalim Catacombs" },
+    { 69, "Farshore" },
+    { 189, "Shrine of the Warbringer" },
+    { 157, "Maw of the Ice Dragon" }
   };
 
-  settings.Add("enter_town", true, "Enter Town");
-  foreach (var townName in vars.TownZoneIDs.Values) {
-    settings.Add(
-      String.Format("enter_{0}", NameToKey(townName)),
-      false,
-      String.Format("Enter {0}", townName),
-      "enter_town"
-    );
+  settings.Add("enter_exit_area", true, "Enter / Exit area");
+  foreach (var areaName in vars.AreaZoneIDs.Values) {
+    string areaKey = NameToKey(areaName);
+    settings.Add(areaKey, true, areaName, "enter_exit_area");
+    settings.Add("enter_" + areaKey, false, "Enter", areaKey);
+    settings.Add("exit_" + areaKey, false, "Exit", areaKey);
   }
 
   settings.Add("split_characters", true, "Split On Characters");
@@ -250,20 +256,20 @@ reset
 
 split 
 {
-  // progress script for end splitting need to Splits.Add to prevent it from triggering more than once
-  // if (current.cutsceneProgressBar > 0.1 && current.cutsceneProgressBar < 1 && current.cutsceneProgressBar > 0.98) {
-  //   return true;
-  // }
   // Shrines
   if (vars.ShrineZoneIDs.ContainsKey(current.zoneID) && current.gameState == 5 && old.gameState == 2) {
     string getShrineKey = "get_" + vars.NameToKey(vars.ShrineZoneIDs[current.zoneID]);
     return vars.Split(getShrineKey);
   }
 
-  // Towns
-  if (vars.TownZoneIDs.ContainsKey(current.zoneID) && old.zoneID != current.zoneID && old.zoneID != 0 && old.gameState == 2) {
-    string getTownKey = "enter_" + vars.NameToKey(vars.TownZoneIDs[current.zoneID]);
-    return vars.Split(getTownKey);
+  // Enter Area
+  if (vars.AreaZoneIDs.ContainsKey(current.zoneID) && old.zoneID != current.zoneID && old.zoneID != 0 && old.gameState == 2) {
+    return vars.Split("enter_" + vars.NameToKey(vars.AreaZoneIDs[current.zoneID]));
+  }
+
+  // Exit Area
+  if (current.zoneID != 0 && current.zoneID != old.zoneID && vars.AreaZoneIDs.ContainsKey(old.zoneID) && (old.gameState == 2 || old.gameState == 4)) {
+    return vars.Split("exit_" + vars.NameToKey(vars.AreaZoneIDs[old.zoneID]));
   }
 
   // Characters
