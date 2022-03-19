@@ -268,6 +268,20 @@ startup
   settings.Add("fight_darius", false, "Darius", "therion_story");
   settings.Add("chapter_end_therion_4", false, "Chapter 4 End", "therion_story");
 
+  // H'aanit
+  settings.Add("haanit_story", true, "H'aanit Story");
+  settings.Add("fight_ghisarma", false, "Ghisarma", "haanit_story");
+  settings.Add("chapter_end_haanit_1", false, "Chapter 1 End", "haanit_story");
+  settings.Add("fight_nathans_bodyguard", false, "Nathan's Bodyguard", "haanit_story");
+  settings.Add("fight_ancient_one", false, "Ancient One", "haanit_story");
+  settings.Add("fight_lord_of_the_forest", false, "Lord of the Forest", "haanit_story");
+  settings.Add("chapter_end_haanit_2", false, "Chapter 2 End", "haanit_story");
+  settings.Add("fight_alaic", false, "Alaic", "haanit_story");
+  settings.Add("fight_dragon", false, "Dragon", "haanit_story");
+  settings.Add("chapter_end_haanit_3", false, "Chapter 3 End", "haanit_story");
+  settings.Add("fight_redeye", false, "Redeye", "haanit_story");
+  settings.Add("chapter_end_haanit_4", false, "Chapter 4 End", "haanit_story");
+
   // Galdera
   settings.Add("galdera", true, "Galdera");
   settings.Add("finis_start", false, "Enter Gate of Finis", "galdera");
@@ -430,6 +444,7 @@ split
     return vars.Split("ending_split");
   }
 
+  // Therion
   if (old.therionProgress != current.therionProgress && old.zoneID != 0) {
     if (current.therionProgress == 140) return vars.Split("fight_heathecote");
     else if (current.therionProgress == 1130) return vars.Split("fight_orlick");
@@ -443,6 +458,32 @@ split
       vars.charChapterEnding = "Therion";
     }
   }
+
+  // Therion Ending
+  if (current.therionProgress == 3200 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 275)) {
+    return vars.Split("ending_split");
+  }
+
+  // H'aanit
+  if (old.haanitProgress != current.haanitProgress && old.zoneID != 0) {
+    if (current.haanitProgress == 110) return vars.Split("fight_ghisarma");
+    else if (current.haanitProgress == 1050) return vars.Split("fight_nathans_bodyguard");
+    else if (current.haanitProgress == 1100) return vars.Split("fight_ancient_one");
+    else if (current.haanitProgress == 1120) return vars.Split("fight_lord_of_the_forest");
+    else if (current.haanitProgress == 2030) return vars.Split("fight_alaic");
+    else if (current.haanitProgress == 2090) return vars.Split("fight_dragon");
+    else if (current.haanitProgress == 3130) return vars.Split("fight_redeye");
+    else if (current.haanitProgress % 1000 == 0) {
+      vars.isChapterEnding = true;
+      vars.charChapterEnding = "Haanit";
+    }
+  }
+
+
+
+
+
+
 
   // All Character Chapter Ends
   if (vars.isChapterEnding) {
