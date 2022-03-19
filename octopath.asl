@@ -217,7 +217,7 @@ startup
   settings.Add("tressa_story", true, "Tressa Story");
   settings.Add("fight_mikk_makk", false, "Mikk & Makk", "tressa_story");
   settings.Add("chapter_end_tressa_1", false, "Chapter 1 End", "tressa_story");
-  settings.Add("fight_omar", false, "Omar", "ophilia_story");
+  settings.Add("fight_omar", false, "Omar", "tressa_story");
   settings.Add("chapter_end_tressa_2", false, "Chapter 2 End", "tressa_story");
   settings.Add("fight_venomtooth_tiger", false, "Venomtooth Tiger", "tressa_story");
   settings.Add("chapter_end_tressa_3", false, "Chapter 3 End", "tressa_story");
@@ -254,6 +254,20 @@ startup
   settings.Add("fight_simeon2", false, "Simeon 2", "primrose_story");
   settings.Add("chapter_end_primrose_4", false, "Chapter 4 End", "primrose_story");
 
+  // Therion
+  settings.Add("therion_story", true, "Therion Story");
+  settings.Add("fight_heathecote", false, "Heathecote", "therion_story");
+  settings.Add("chapter_end_therion_1", false, "Chapter 1 End", "therion_story");
+  settings.Add("fight_orlick", false, "Orlick", "therion_story");
+  settings.Add("chapter_end_therion_2", false, "Chapter 2 End", "therion_story");
+  settings.Add("fight_darius_henchmen", false, "Darius's Henchmen", "therion_story");
+  settings.Add("fight_gareth", false, "Gareth", "therion_story");
+  settings.Add("chapter_end_therion_3", false, "Chapter 3 End", "therion_story");
+  settings.Add("fight_darius_underlings", false, "Darius's Underlings", "therion_story");
+  settings.Add("3_percent_steal", false, "3% Steal", "therion_story");
+  settings.Add("fight_darius", false, "Darius", "therion_story");
+  settings.Add("chapter_end_therion_4", false, "Chapter 4 End", "therion_story");
+
   // Galdera
   settings.Add("galdera", true, "Galdera");
   settings.Add("finis_start", false, "Enter Gate of Finis", "galdera");
@@ -288,9 +302,6 @@ reset
 
 split 
 {
-  print("cPB1: " + current.cutsceneProgressBar.ToString() + " oPB1: " + old.cutsceneProgressBar.ToString());
-  print("cPB2: " + current.cutsceneProgressBar2.ToString() + " oPB2: " + old.cutsceneProgressBar2.ToString());
-
   // Shrines
   if (vars.ShrineZoneIDs.ContainsKey(current.zoneID) && current.gameState == 5 && old.gameState == 2) {
     string getShrineKey = "get_" + vars.NameToKey(vars.ShrineZoneIDs[current.zoneID]);
@@ -384,6 +395,10 @@ split
     else if (current.primroseProgress == 2170) return vars.Split("fight_albus");
     else if (current.primroseProgress == 3120) return vars.Split("fight_simeon1");
     else if (current.primroseProgress == 3150) return vars.Split("fight_simeon2");
+    else if (current.primroseProgress % 1000 == 0) {
+      vars.isChapterEnding = true;
+      vars.charChapterEnding = "Primrose";
+    }
   }
 
   // Primrose Ending
@@ -415,6 +430,21 @@ split
     return vars.Split("ending_split");
   }
 
+  if (old.therionProgress != current.therionProgress && old.zoneID != 0) {
+    if (current.therionProgress == 140) return vars.Split("fight_heathecote");
+    else if (current.therionProgress == 1130) return vars.Split("fight_orlick");
+    else if (current.therionProgress == 2100) return vars.Split("fight_darius_henchmen");
+    else if (current.therionProgress == 2150) return vars.Split("fight_gareth");
+    else if (current.therionProgress == 3040) return vars.Split("fight_darius_underlings");
+    else if (current.therionProgress == 3140) return vars.Split("3_percent_steal");
+    else if (current.therionProgress == 3180) return vars.Split("fight_darius");
+    else if (current.therionProgress % 1000 == 0) {
+      vars.isChapterEnding = true;
+      vars.charChapterEnding = "Therion";
+    }
+  }
+
+  // All Character Chapter Ends
   if (vars.isChapterEnding) {
     int progress = 0;
     if (vars.charChapterEnding == "Ophilia") progress = current.ophiliaProgress;
