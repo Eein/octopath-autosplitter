@@ -6,7 +6,7 @@ state("Octopath_Traveler-Win64-Shipping")
   int zoneID: 0x289D240, 0x36C;
   int money: 0x0289CC48, 0x370, 0x158;
   int gameState: 0x0289D270, 0x36C;
-  float cutsceneProgressBar: 0x2AD3F80, 0x1B0, 0x270, 0x18, 0xD68;
+  float cutsceneProgressBar: 0x029EC8D8, 0x10, 0xA0, 0x30, 0x10, 0x350;
   int cutsceneScriptIndex: 0x289D230, 0x388;
 
   int ophiliaProgress: 0x0289CC48, 0x370, 0x1C8, 0x510;
@@ -173,7 +173,7 @@ startup
   settings.Add("character_haanit", false, "H'aanit", "split_characters");
   settings.Add("character_therion", false, "Therion", "split_characters");
 
-  //Ophilia
+  // Ophilia
   settings.Add("ophilia_story", true, "Ophilia Story");
   settings.Add("fight_guardian", false, "Guardian of the First Flame", "ophilia_story");
   settings.Add("chapter_end_ophilia_1", false, "Chapter 1 End", "ophilia_story");
@@ -183,25 +183,7 @@ startup
   settings.Add("chapter_end_ophilia_3", false, "Chapter 3 End", "ophilia_story");
   settings.Add("fight_cultists", false, "Cultists", "ophilia_story");
   settings.Add("fight_mattias", false, "Mattias", "ophilia_story");
-  settings.Add("chapter_end_ophilia_4", false, "Chapter 4 End", "ophilia_story");
-
-  // Olberic
-  settings.Add("olberic_story", true, "Olberic Story");
-  settings.Add("fight_gaston", false, "Gaston", "olberic_story");
-  settings.Add("chapter_end_olberic_1", false, "Chapter 1 End", "olberic_story");
-  settings.Add("fight_victorino", false, "Victorino", "olberic_story");
-  settings.Add("fight_joshua", false, "Joshua", "olberic_story");
-  settings.Add("fight_archibold", false, "Archibold", "olberic_story");
-  settings.Add("fight_gustav", false, "Gustav", "olberic_story");
-  settings.Add("chapter_end_olberic_2", false, "Chapter 2 End", "olberic_story");
-  settings.Add("fight_lizards1", false, "Lizards #1", "olberic_story");
-  settings.Add("fight_lizards2", false, "Lizards #2", "olberic_story");
-  settings.Add("fight_lizardking", false, "Lizardking", "olberic_story");
-  settings.Add("fight_erhardt", false, "Erhardt", "olberic_story");
-  settings.Add("chapter_end_olberic_3", false, "Chapter 3 End", "olberic_story");
-  settings.Add("fight_redhat", false, "Red Hat", "olberic_story");
-  settings.Add("fight_werner", false, "Werner", "olberic_story");
-  settings.Add("chapter_end_olberic_4", false, "Chapter 4 End", "olberic_story");
+  settings.Add("chapter_end_ophilia_4", false, "Chapter 4 End", "ophilia_story"); 
 
   // Cyrus
   settings.Add("cyrus_story", true, "Cyrus Story");
@@ -221,6 +203,36 @@ startup
   settings.Add("chapter_end_tressa_2", false, "Chapter 2 End", "tressa_story");
   settings.Add("chapter_end_tressa_3", false, "Chapter 3 End", "tressa_story");
   settings.Add("chapter_end_tressa_4", false, "Chapter 4 End", "tressa_story");
+
+  // Olberic
+  settings.Add("olberic_story", true, "Olberic Story");
+  settings.Add("fight_gaston", false, "Gaston", "olberic_story");
+  settings.Add("chapter_end_olberic_1", false, "Chapter 1 End", "olberic_story");
+  settings.Add("fight_victorino", false, "Victorino", "olberic_story");
+  settings.Add("fight_joshua", false, "Joshua", "olberic_story");
+  settings.Add("fight_archibold", false, "Archibold", "olberic_story");
+  settings.Add("fight_gustav", false, "Gustav", "olberic_story");
+  settings.Add("chapter_end_olberic_2", false, "Chapter 2 End", "olberic_story");
+  settings.Add("fight_lizards1", false, "Lizards #1", "olberic_story");
+  settings.Add("fight_lizards2", false, "Lizards #2", "olberic_story");
+  settings.Add("fight_lizardking", false, "Lizardking", "olberic_story");
+  settings.Add("fight_erhardt", false, "Erhardt", "olberic_story");
+  settings.Add("chapter_end_olberic_3", false, "Chapter 3 End", "olberic_story");
+  settings.Add("fight_redhat", false, "Red Hat", "olberic_story");
+  settings.Add("fight_werner", false, "Werner", "olberic_story");
+  settings.Add("chapter_end_olberic_4", false, "Chapter 4 End", "olberic_story");
+
+  // Primrose
+  settings.Add("primrose_story", true, "Primrose Story");
+  settings.Add("fight_helgenish", false, "Helgenish", "primrose_story");
+  settings.Add("chapter_end_primrose_1", false, "Chapter 1 End", "primrose_story");
+  settings.Add("fight_rufus", false, "Rufus", "ophilia_story");
+  settings.Add("chapter_end_primrose_2", false, "Chapter 2 End", "primrose_story");
+  settings.Add("fight_albus", false, "Albus", "primrose_story");
+  settings.Add("chapter_end_primrose_3", false, "Chapter 3 End", "primrose_story");
+  settings.Add("fight_simeon1", false, "Simeon 1", "primrose_story");
+  settings.Add("fight_simeon2", false, "Simeon 2", "primrose_story");
+  settings.Add("chapter_end_primrose_4", false, "Chapter 4 End", "primrose_story");
 
   // Galdera
   settings.Add("galdera", true, "Galdera");
@@ -256,6 +268,8 @@ reset
 
 split 
 {
+
+  print(current.cutsceneScriptIndex.ToString() + " " + current.cutsceneProgressBar.ToString());
   // Shrines
   if (vars.ShrineZoneIDs.ContainsKey(current.zoneID) && current.gameState == 5 && old.gameState == 2) {
     string getShrineKey = "get_" + vars.NameToKey(vars.ShrineZoneIDs[current.zoneID]);
@@ -320,17 +334,10 @@ split
     else if (current.cyrusProgress == 1110) return vars.Split("fight_gideon");
     else if (current.cyrusProgress == 2160) return vars.Split("fight_yvon");
     else if (current.cyrusProgress == 3060) return vars.Split("fight_lucia");
-    else if (current.cyrusProgress == 3060) return vars.Split("fight_lucia");
     else if (current.cyrusProgress % 1000 == 0) {
       vars.isChapterEnding = true;
       vars.charChapterEnding = "Cyrus";
     }
-  }
-
-  if(current.cyrusProgress == 3110) {
-      print("" + current.cyrusProgress);
-      print("" + current.cutsceneScriptIndex);
-      print("" + current.cutsceneProgressBar);
   }
 
   if (current.cyrusProgress == 3110 &&
@@ -348,6 +355,22 @@ split
       vars.isChapterEnding = true;
       vars.charChapterEnding = "Tressa";
     }
+  }
+
+  // Primrose
+  if (old.primroseProgress != current.primroseProgress && old.zoneID != 0) {
+    if (current.primroseProgress == 160) return vars.Split("fight_helgenish");
+    else if (current.primroseProgress == 1180) return vars.Split("fight_rufus");
+    else if (current.primroseProgress == 2170) return vars.Split("fight_albus");
+    else if (current.primroseProgress == 3120) return vars.Split("fight_simeon1");
+    else if (current.primroseProgress == 3150) return vars.Split("fight_simeon2");
+  }
+
+  // Primrose Ending
+  if (current.primroseProgress == 3150 &&
+    old.cutsceneScriptIndex > 12 &&
+    current.cutsceneScriptIndex == 0) {
+      return vars.Split("ending_split");
   }
 
   if (vars.isChapterEnding) {
