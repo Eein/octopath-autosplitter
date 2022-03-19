@@ -6,7 +6,7 @@ state("Octopath_Traveler-Win64-Shipping")
   int zoneID: 0x289D240, 0x36C;
   int money: 0x0289CC48, 0x370, 0x158;
   int gameState: 0x0289D270, 0x36C;
-  int cutsceneProgressBar: 0x29E3A10, 0x20, 0x1C8;
+  float cutsceneProgressBar: 0x29E3A10, 0x20, 0x1C8;
 
   int ophiliaProgress: 0x0289CC48, 0x370, 0x1C8, 0x510;
   int cyrusProgress: 0x0289CC48, 0x370, 0x1C8, 0x1f0;
@@ -93,7 +93,7 @@ update
 startup 
 {
   Func<string,string> NameToKey = (name) => {
-    return name.ToLower().Replace(' ', '_');
+    return name.ToLower().Replace(' ', '_').Replace("'", "");
   };
   vars.NameToKey = NameToKey;
 
@@ -115,6 +115,44 @@ startup
       false,
       String.Format("Get {0}", shrineName),
       "get_shrine"
+    );
+  }
+
+  vars.TownZoneIDs = new Dictionary<int, string> {
+    { 137, "Flamesgrace" },
+    { 76, "Atlasdam" },
+    { 114, "Rippletide" },
+    { 12, "Cobbleston" },
+    { 34, "Sunshade" },
+    { 56, "Clearbrook" },
+    { 94, "Bolderfall" },
+    { 158, "S'warkii" },
+    { 145, "Stillsnow" },
+    { 83, "Noblecourt" },
+    { 120, "Goldshore" },
+    { 13, "Stonegard" },
+    { 40, "Wellspring" },
+    { 62, "Saintsbridge" },
+    { 101, "Quarrycrest" },
+    { 164, "Victor's Hollow" },
+    { 152, "Northreach" },
+    { 89, "Wispermill" },
+    { 130, "Grandport" },
+    { 16, "Everhold" },
+    { 49, "Marsalim" },
+    { 70, "Riverford" },
+    { 108, "Orewell" },
+    { 171, "Duskbarrow" },
+    { 194, "Ruins of Hornburg" }
+  };
+
+  settings.Add("enter_town", true, "Enter Town");
+  foreach (var townName in vars.TownZoneIDs.Values) {
+    settings.Add(
+      String.Format("enter_{0}", NameToKey(townName)),
+      false,
+      String.Format("Enter {0}", townName),
+      "enter_town"
     );
   }
 
@@ -184,6 +222,7 @@ startup
   settings.Add("at_journeys_end", false, "Galdera End", "galdera");
 
   settings.Add("credits", true, "Credits");
+
 }
 
 start
@@ -209,10 +248,20 @@ reset
 
 split 
 {
+  // progress script for end splitting need to Splits.Add to prevent it from triggering more than once
+  // if (current.cutsceneProgressBar > 0.1 && current.cutsceneProgressBar < 1 && current.cutsceneProgressBar > 0.98) {
+  //   return true;
+  // }
   // Shrines
   if (vars.ShrineZoneIDs.ContainsKey(current.zoneID) && current.gameState == 5 && old.gameState == 2) {
     string getShrineKey = "get_" + vars.NameToKey(vars.ShrineZoneIDs[current.zoneID]);
     return vars.Split(getShrineKey);
+  }
+
+  // Towns
+  if (vars.TownZoneIDs.ContainsKey(current.zoneID) && old.zoneID != current.zoneID && old.zoneID != 0 && old.gameState == 2) {
+    string getTownKey = "enter_" + vars.NameToKey(vars.TownZoneIDs[current.zoneID]);
+    return vars.Split(getTownKey);
   }
 
   // Characters
