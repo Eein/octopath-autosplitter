@@ -287,7 +287,7 @@ startup
     { 157, "Maw of the Ice Dragon" }
   };
 
-  settings.Add("enter_exit_area", true, "Enter / Exit area");
+  settings.Add("enter_exit_area", true, "Enter / Exit Area");
   settings.SetToolTip("enter_exit_area", "Split on entering and/or exiting an area.");
 
   foreach (var areaName in vars.AreaZoneIDs.Values) {
