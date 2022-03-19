@@ -2,7 +2,7 @@
 ## Installation
  1. Download [https://github.com/Eein/octopath-autosplitter/releases/latest/download/octopath.asl](octopath.asl)
  2. Open Livesplit
-  - Edit Layout
+ 3. Edit Layout
   - Add `Control` > `Scriptable Auto Splitter` component to the layout.
   - Double Click `Scriptable Auto Splitter` to edit its settings.
   - Select desired options for your run!
