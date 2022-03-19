@@ -6,7 +6,8 @@ state("Octopath_Traveler-Win64-Shipping")
   int zoneID: 0x289D240, 0x36C;
   int money: 0x0289CC48, 0x370, 0x158;
   int gameState: 0x0289D270, 0x36C;
-  float cutsceneProgressBar: 0x29E3A10, 0x20, 0x1C8;
+  float cutsceneProgressBar: 0x2AD3F80, 0x1B0, 0x270, 0x18, 0xD68;
+  int cutsceneScriptIndex: 0x289D230, 0x388;
 
   int ophiliaProgress: 0x0289CC48, 0x370, 0x1C8, 0x510;
   int cyrusProgress: 0x0289CC48, 0x370, 0x1C8, 0x1f0;
@@ -221,6 +222,7 @@ startup
   settings.Add("journeys_end_start", false, "Enter Journey's End", "galdera");
   settings.Add("at_journeys_end", false, "Galdera End", "galdera");
 
+  settings.Add("ending_split", true, "Ending Split");
   settings.Add("credits", true, "Credits");
 
 }
@@ -313,18 +315,32 @@ split
     else if (current.cyrusProgress == 2160) return vars.Split("fight_yvon");
     else if (current.cyrusProgress == 3060) return vars.Split("fight_lucia");
     else if (current.cyrusProgress == 3060) return vars.Split("fight_lucia");
-    else if (current.ophiliaProgress % 1000 == 0) {
+    else if (current.cyrusProgress % 1000 == 0) {
       vars.isChapterEnding = true;
       vars.charChapterEnding = "Cyrus";
     }
   }
 
+  if(current.cyrusProgress == 3110) {
+      print("" + current.cyrusProgress);
+      print("" + current.cutsceneScriptIndex);
+      print("" + current.cutsceneProgressBar);
+  }
+
+  if (current.cyrusProgress == 3110 &&
+    current.cutsceneScriptIndex >= 138 &&
+    current.cutsceneProgressBar > 0.1 &&
+    current.cutsceneProgressBar < 1 &&
+    current.cutsceneProgressBar > 0.90) {
+      return vars.Split("ending_split");
+  }
+
   // Tressa
   if (old.tressaProgress != current.tressaProgress && old.zoneID != 0) {
     if (current.tressaProgress == 170) return vars.Split("fight_mikk_and_makk");
-    else if (current.ophiliaProgress % 1000 == 0) {
+    else if (current.tressaProgress % 1000 == 0) {
       vars.isChapterEnding = true;
-      vars.charChapterEnding = "Cyrus";
+      vars.charChapterEnding = "Tressa";
     }
   }
 
