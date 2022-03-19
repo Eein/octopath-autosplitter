@@ -15,6 +15,9 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
+          generate_release_notes: true
+          draft: false
+          prerelease: false
           tag_name: release-${{ github.sha }}
           release_name: Release ${{ github.sha }}
           files: octopath.asl
