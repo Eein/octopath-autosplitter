@@ -6,7 +6,7 @@ state("Octopath_Traveler-Win64-Shipping")
   int zoneID: 0x289D240, 0x36C;
   int money: 0x0289CC48, 0x370, 0x158;
   int gameState: 0x0289D270, 0x36C;
-  float cutsceneProgressBar: 0x029EC8D8, 0x10, 0xA0, 0x30, 0x10, 0x350;
+  float cutsceneProgressBar: 0x0289D268, 0x378, 0x20, 0x230, 0xD0, 0x350;
   int cutsceneScriptIndex: 0x289D230, 0x388;
 
   int ophiliaProgress: 0x0289CC48, 0x370, 0x1C8, 0x510;
@@ -269,7 +269,7 @@ reset
 split 
 {
 
-  print(current.cutsceneScriptIndex.ToString() + " " + current.cutsceneProgressBar.ToString());
+  print(current.cutsceneScriptIndex.ToString() + " " + current.cutsceneProgressBar.ToString() + " " + old.cutsceneProgressBar.ToString());
   // Shrines
   if (vars.ShrineZoneIDs.ContainsKey(current.zoneID) && current.gameState == 5 && old.gameState == 2) {
     string getShrineKey = "get_" + vars.NameToKey(vars.ShrineZoneIDs[current.zoneID]);
@@ -315,7 +315,12 @@ split
     }
   }
 
-  // Olphilia
+  // Olberic Ending
+  if (current.olbericProgress == 3120 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 174)) {
+    return vars.Split("ending_split");
+  }
+
+  // Ophilia
   if (old.ophiliaProgress < current.ophiliaProgress && old.zoneID != 0) {
     if (current.ophiliaProgress == 170) return vars.Split("fight_guardian");
     else if (current.ophiliaProgress == 1140) return vars.Split("fight_hrodvitnir");
@@ -326,6 +331,11 @@ split
       vars.isChapterEnding = true;
       vars.charChapterEnding = "Ophilia";
     }
+  }
+
+  // Ophilia Ending
+  if (current.ophiliaProgress == 3160 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 94)) {
+    return vars.Split("ending_split");
   }
 
   // Cyrus
@@ -340,11 +350,10 @@ split
     }
   }
 
+  // Cyrus Ending
   if (current.cyrusProgress == 3110 &&
     current.cutsceneScriptIndex >= 138 &&
-    current.cutsceneProgressBar > 0.1 &&
-    current.cutsceneProgressBar < 1 &&
-    current.cutsceneProgressBar > 0.90) {
+    current.cutsceneProgressBar > 0.98) {
       return vars.Split("ending_split");
   }
 
@@ -367,10 +376,8 @@ split
   }
 
   // Primrose Ending
-  if (current.primroseProgress == 3150 &&
-    old.cutsceneScriptIndex > 12 &&
-    current.cutsceneScriptIndex == 0) {
-      return vars.Split("ending_split");
+  if (current.primroseProgress == 3150 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 94)) {
+    return vars.Split("ending_split");
   }
 
   if (vars.isChapterEnding) {
