@@ -6,8 +6,12 @@ state("Octopath_Traveler-Win64-Shipping")
   int zoneID: 0x289D240, 0x36C;
   int money: 0x0289CC48, 0x370, 0x158;
   int gameState: 0x0289D270, 0x36C;
-  float cutsceneProgressBar: 0x0289D268, 0x378, 0x20, 0x230, 0xD0, 0x350;
   int cutsceneScriptIndex: 0x289D230, 0x388;
+
+  
+  float cutsceneProgressBar: 0x0289D268, 0x378, 0x20, 0x230, 0xD0, 0x350;
+  float cutsceneProgressBar2: 0x0289D268, 0x378, 0x20, 0x230, 0x288;
+
 
   int ophiliaProgress: 0x0289CC48, 0x370, 0x1C8, 0x510;
   int cyrusProgress: 0x0289CC48, 0x370, 0x1C8, 0x1f0;
@@ -119,6 +123,19 @@ startup
     );
   }
 
+  // After finishing advanced job fight state goes from 6 to 5
+  vars.AdvancedJobFights = new Dictionary<int,string> {
+    { 187, "Steorra" },
+    { 188, "Balogar" },
+    { 189, "Winnehild" },
+    { 190, "Dreisang" }
+  };
+
+  settings.Add("advanced_job_fights", true, "Advanced Job Fights");
+  foreach (var fight in vars.AdvancedJobFights.Values) {
+    settings.Add("advanced_job_fight_" + NameToKey(fight), true, fight, "advanced_job_fights");
+  }
+
   vars.AreaZoneIDs = new Dictionary<int, string> {
     { 137, "Flamesgrace" },
     { 76, "Atlasdam" },
@@ -198,10 +215,13 @@ startup
 
   // Tressa
   settings.Add("tressa_story", true, "Tressa Story");
-  settings.Add("fight_mikk_and_makk", false, "Mikk and Makk", "tressa_story");
+  settings.Add("fight_mikk_makk", false, "Mikk & Makk", "tressa_story");
   settings.Add("chapter_end_tressa_1", false, "Chapter 1 End", "tressa_story");
+  settings.Add("fight_omar", false, "Omar", "ophilia_story");
   settings.Add("chapter_end_tressa_2", false, "Chapter 2 End", "tressa_story");
+  settings.Add("fight_venomtooth_tiger", false, "Venomtooth Tiger", "tressa_story");
   settings.Add("chapter_end_tressa_3", false, "Chapter 3 End", "tressa_story");
+  settings.Add("fight_esmeralda", false, "Esmeralda", "tressa_story");
   settings.Add("chapter_end_tressa_4", false, "Chapter 4 End", "tressa_story");
 
   // Olberic
@@ -226,7 +246,7 @@ startup
   settings.Add("primrose_story", true, "Primrose Story");
   settings.Add("fight_helgenish", false, "Helgenish", "primrose_story");
   settings.Add("chapter_end_primrose_1", false, "Chapter 1 End", "primrose_story");
-  settings.Add("fight_rufus", false, "Rufus", "ophilia_story");
+  settings.Add("fight_rufus", false, "Rufus", "primrose_story");
   settings.Add("chapter_end_primrose_2", false, "Chapter 2 End", "primrose_story");
   settings.Add("fight_albus", false, "Albus", "primrose_story");
   settings.Add("chapter_end_primrose_3", false, "Chapter 3 End", "primrose_story");
@@ -268,12 +288,18 @@ reset
 
 split 
 {
+  print("cPB1: " + current.cutsceneProgressBar.ToString() + " oPB1: " + old.cutsceneProgressBar.ToString());
+  print("cPB2: " + current.cutsceneProgressBar2.ToString() + " oPB2: " + old.cutsceneProgressBar2.ToString());
 
-  print(current.cutsceneScriptIndex.ToString() + " " + current.cutsceneProgressBar.ToString() + " " + old.cutsceneProgressBar.ToString());
   // Shrines
   if (vars.ShrineZoneIDs.ContainsKey(current.zoneID) && current.gameState == 5 && old.gameState == 2) {
     string getShrineKey = "get_" + vars.NameToKey(vars.ShrineZoneIDs[current.zoneID]);
     return vars.Split(getShrineKey);
+  }
+
+  // Advanced Job Fights
+  if (vars.AdvancedJobFights.ContainsKey(current.zoneID) && current.gameState == 5 && old.gameState == 6) {
+    return vars.Split("advanced_job_fight_" + vars.NameToKey(vars.AdvancedJobFights[current.zoneID]));
   }
 
   // Enter Area
@@ -296,29 +322,6 @@ split
   if(old.haanitHP == 0 && current.haanitHP != 0) return vars.Split("character_haanit");
   if(old.therionHP == 0 && current.therionHP != 0) return vars.Split("character_therion");
 
-  // Olberic
-  if (old.olbericProgress < current.olbericProgress && old.zoneID != 0) {
-    if (current.olbericProgress == 160) return vars.Split("fight_gaston");
-    else if (current.olbericProgress == 1070) return vars.Split("fight_victorino");
-    else if (current.olbericProgress == 1140) return vars.Split("fight_joshua");
-    else if (current.olbericProgress == 1180) return vars.Split("fight_archibold");
-    else if (current.olbericProgress == 1220) return vars.Split("fight_gustav");
-    else if (current.olbericProgress == 2070) return vars.Split("fight_lizards1");
-    else if (current.olbericProgress == 2080) return vars.Split("fight_lizards2");
-    else if (current.olbericProgress == 2110) return vars.Split("fight_lizardking");
-    else if (current.olbericProgress == 2130) return vars.Split("fight_erhardt");
-    else if (current.olbericProgress == 3050) return vars.Split("fight_red Hat");
-    else if (current.olbericProgress == 3110) return vars.Split("fight_werner");
-    else if (current.olbericProgress % 1000 == 0) {
-      vars.isChapterEnding = true;
-      vars.charChapterEnding = "Olberic";
-    }
-  }
-
-  // Olberic Ending
-  if (current.olbericProgress == 3120 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 174)) {
-    return vars.Split("ending_split");
-  }
 
   // Ophilia
   if (old.ophiliaProgress < current.ophiliaProgress && old.zoneID != 0) {
@@ -359,11 +362,19 @@ split
 
   // Tressa
   if (old.tressaProgress != current.tressaProgress && old.zoneID != 0) {
-    if (current.tressaProgress == 170) return vars.Split("fight_mikk_and_makk");
+    if (current.tressaProgress == 170) return vars.Split("fight_mikk_makk");
+    else if (current.tressaProgress == 1120) return vars.Split("fight_omar");
+    else if (current.tressaProgress == 2150) return vars.Split("fight_venomtooth_tiger");
+    else if (current.tressaProgress == 3120) return vars.Split("fight_esmeralda");
     else if (current.tressaProgress % 1000 == 0) {
       vars.isChapterEnding = true;
       vars.charChapterEnding = "Tressa";
     }
+  }
+
+  // Tressa Ending
+  if (current.tressaProgress == 3180 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 209)) {
+    return vars.Split("ending_split");
   }
 
   // Primrose
@@ -377,6 +388,30 @@ split
 
   // Primrose Ending
   if (current.primroseProgress == 3150 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 94)) {
+    return vars.Split("ending_split");
+  }
+
+  // Olberic
+  if (old.olbericProgress < current.olbericProgress && old.zoneID != 0) {
+    if (current.olbericProgress == 160) return vars.Split("fight_gaston");
+    else if (current.olbericProgress == 1070) return vars.Split("fight_victorino");
+    else if (current.olbericProgress == 1140) return vars.Split("fight_joshua");
+    else if (current.olbericProgress == 1180) return vars.Split("fight_archibold");
+    else if (current.olbericProgress == 1220) return vars.Split("fight_gustav");
+    else if (current.olbericProgress == 2070) return vars.Split("fight_lizards1");
+    else if (current.olbericProgress == 2080) return vars.Split("fight_lizards2");
+    else if (current.olbericProgress == 2110) return vars.Split("fight_lizardking");
+    else if (current.olbericProgress == 2130) return vars.Split("fight_erhardt");
+    else if (current.olbericProgress == 3050) return vars.Split("fight_red Hat");
+    else if (current.olbericProgress == 3110) return vars.Split("fight_werner");
+    else if (current.olbericProgress % 1000 == 0) {
+      vars.isChapterEnding = true;
+      vars.charChapterEnding = "Olberic";
+    }
+  }
+
+  // Olberic Ending
+  if (current.olbericProgress == 3120 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 174)) {
     return vars.Split("ending_split");
   }
 
