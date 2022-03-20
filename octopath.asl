@@ -344,14 +344,14 @@ split
   }
 
   // Characters
-  if(old.ophiliaProgress == 0 && current.ophiliaProgress == 100) return vars.Split("character_ophilia");
-  if(old.cyrusProgress == 0 && current.cyrusProgress == 100) return vars.Split("character_cyrus");
-  if(old.tressaProgress == 0 && current.tressaProgress == 100) return vars.Split("character_tressa");
-  if(old.olbericProgress == 0 && current.olbericProgress == 100) return vars.Split("character_olberic");
-  if(old.primroseProgress == 0 && current.primroseProgress == 100) return vars.Split("character_primrose");
-  if(old.alfynProgress == 0 && current.alfynProgress == 100) return vars.Split("character_alfyn");
-  if(old.haanitProgress == 0 && current.haanitProgress == 100) return vars.Split("character_haanit");
-  if(old.therionProgress == 0 && current.therionProgress == 100) return vars.Split("character_therion");
+  if(old.ophiliaProgress == 0 && current.ophiliaProgress >= 100) return vars.Split("character_ophilia");
+  if(old.cyrusProgress == 0 && current.cyrusProgress >= 100) return vars.Split("character_cyrus");
+  if(old.tressaProgress == 0 && current.tressaProgress >= 100) return vars.Split("character_tressa");
+  if(old.olbericProgress == 0 && current.olbericProgress >= 100) return vars.Split("character_olberic");
+  if(old.primroseProgress == 0 && current.primroseProgress >= 100) return vars.Split("character_primrose");
+  if(old.alfynProgress == 0 && current.alfynProgress >= 100) return vars.Split("character_alfyn");
+  if(old.haanitProgress == 0 && current.haanitProgress >= 100) return vars.Split("character_haanit");
+  if(old.therionProgress == 0 && current.therionProgress >= 100) return vars.Split("character_therion");
 
 
   // Ophilia
