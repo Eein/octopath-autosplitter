@@ -1,6 +1,6 @@
 state("Octopath_Traveler-Win64-Shipping")
 {
-  int start: 0x2E08100, 0x44;
+  int start: 0x2B32C48, 0xE30;
   int characterIsHighlighted: 0x289D268, 0x368, 0x0, 0x328;
 
   int zoneID: 0x289D240, 0x36C;
@@ -20,28 +20,6 @@ state("Octopath_Traveler-Win64-Shipping")
   int alfynProgress: 0x0289CC48, 0x370, 0x1C8, 0x5d8;
   int therionProgress: 0x0289CC48, 0x370, 0x1C8, 0x448;
   int haanitProgress: 0x0289CC48, 0x370, 0x1C8, 0x380;
-
-  int enemyOneID: 0x289CBC8, 0x4C0, 0x8, 0x160, 0x20, 0x3D8, 0xE0, 0x3E0;
-  int enemyOneHP: 0x289CBC8, 0x4C0, 0x8, 0x160, 0x20, 0x3D8, 0xE0, 0x3E4;
-
-  int enemyTwoID: 0x289CBC8, 0x4C0, 0x10, 0x160, 0x20, 0x3D8, 0xE0, 0x3E0;
-  int enemyTwoHP: 0x289CBC8, 0x4C0, 0x10, 0x160, 0x20, 0x3D8, 0xE0, 0x3E4;
-
-  int enemyThreeID: 0x289CBC8, 0x4C0, 0x18, 0x160, 0x20, 0x3D8, 0xE0, 0x3E0;
-  int enemyThreeHP: 0x289CBC8, 0x4C0, 0x18, 0x160, 0x20, 0x3D8, 0xE0, 0x3E4;
-
-  int enemyFourID: 0x289CBC8, 0x4C0, 0x20, 0x160, 0x20, 0x3D8, 0xE0, 0x3E0;
-  int enemyFourHP: 0x289CBC8, 0x4C0, 0x20, 0x160, 0x20, 0x3D8, 0xE0, 0x3E4;
-
-  // used for splitting when character enters party
-  int ophiliaHP: 0x0289CC48, 0x370, 0x1C8, 0x4BC;
-  int cyrusHP: 0x0289CC48, 0x370, 0x1C8, 0x19C;
-  int tressaHP: 0x0289CC48, 0x370, 0x1C8, 0xD4;
-  int olbericHP: 0x0289CC48, 0x370, 0x1C8, 0xC;
-  int primroseHP: 0x0289CC48, 0x370, 0x1C8, 0x264;
-  int alfynHP: 0x0289CC48, 0x370, 0x1C8, 0x584;
-  int haanitHP: 0x0289CC48, 0x370, 0x1C8, 0x32C;
-  int therionHP: 0x0289CC48, 0x370, 0x1C8, 0x3F4;
 }
 
 init 
@@ -324,7 +302,7 @@ startup
 start
 {
   if (timer.CurrentPhase == TimerPhase.NotRunning &&
-      current.start == 2 &&
+      current.start == 1 &&
       old.characterIsHighlighted == 1 &&
       current.characterIsHighlighted == 1 &&
       current.zoneID == 0) {
@@ -366,14 +344,14 @@ split
   }
 
   // Characters
-  if(old.ophiliaHP == 0 && current.ophiliaHP != 0) return vars.Split("character_ophilia");
-  if(old.cyrusHP == 0 && current.cyrusHP != 0) return vars.Split("character_cyrus");
-  if(old.tressaHP == 0 && current.tressaHP != 0) return vars.Split("character_tressa");
-  if(old.olbericHP == 0 && current.olbericHP != 0) return vars.Split("character_olberic");
-  if(old.primroseHP == 0 && current.primroseHP != 0) return vars.Split("character_primrose");
-  if(old.alfynHP == 0 && current.alfynHP != 0) return vars.Split("character_alfyn");
-  if(old.haanitHP == 0 && current.haanitHP != 0) return vars.Split("character_haanit");
-  if(old.therionHP == 0 && current.therionHP != 0) return vars.Split("character_therion");
+  if(old.ophiliaProgress == 0 && current.ophiliaProgress == 100) return vars.Split("character_ophilia");
+  if(old.cyrusProgress == 0 && current.cyrusProgress == 100) return vars.Split("character_cyrus");
+  if(old.tressaProgress == 0 && current.tressaProgress == 100) return vars.Split("character_tressa");
+  if(old.olbericProgress == 0 && current.olbericProgress == 100) return vars.Split("character_olberic");
+  if(old.primroseProgress == 0 && current.primroseProgress == 100) return vars.Split("character_primrose");
+  if(old.alfynProgress == 0 && current.alfynProgress == 100) return vars.Split("character_alfyn");
+  if(old.haanitProgress == 0 && current.haanitProgress == 100) return vars.Split("character_haanit");
+  if(old.therionProgress == 0 && current.therionProgress == 100) return vars.Split("character_therion");
 
 
   // Ophilia
