@@ -1,11 +1,11 @@
-# octopath-autosplitter
+# Octopath Traveler Autosplitter
 ## Installation
- 1. Download [https://github.com/Eein/octopath-autosplitter/releases/latest/download/octopath.asl](octopath.asl)
- 2. Open Livesplit
- 3. Edit Layout
-  - Add `Control` > `Scriptable Auto Splitter` component to the layout.
-  - Double Click `Scriptable Auto Splitter` to edit its settings.
-  - Select desired options for your run!
+1. Download [octopath.asl](https://github.com/Eein/octopath-autosplitter/releases/latest/download/octopath.asl)
+2. Open Livesplit
+3. Edit Layout
+  1. Add `Control` > `Scriptable Auto Splitter` component to the layout.
+  2. Double Click `Scriptable Auto Splitter` to edit its settings.
+  3. Select desired options for your run!
 
 ## Usage
 Note that you will likely need a different layout for each category, to store different autosplitter settings. Testing needed, and can possibly be improved.
@@ -32,7 +32,7 @@ Note that you will likely need a different layout for each category, to store di
   * Enter Journey's End: Finish Boss Gauntlet, enter next area.
   * Galdera End: Split on Spurning Ribbon / 100k, current Galdera end timing.
 - **Credits**: Split on Credits Start
-  * 
+  * This isn't suitable for ending runs.
 
 ### Known Issues / Enhancements
  - Start isn't perfect, can sometimes be off by < 0.05s. Therion seems to be delayed by more.
