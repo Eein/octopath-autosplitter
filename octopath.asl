@@ -126,6 +126,8 @@ startup
 
   // Olberic
   settings.Add("olberic_story", true, "Olberic Story", "character_stories");
+  settings.Add("fight_brigands1", false, "Brigands 1", "olberic_story");
+  settings.Add("fight_brigands2", false, "Brigands 2", "olberic_story");
   settings.Add("fight_gaston", false, "Gaston", "olberic_story");
   settings.Add("chapter_end_olberic_1", false, "Chapter 1 End", "olberic_story");
   settings.Add("fight_victorino", false, "Victorino", "olberic_story");
@@ -138,7 +140,7 @@ startup
   settings.Add("fight_lizardking", false, "Lizardking", "olberic_story");
   settings.Add("fight_erhardt", false, "Erhardt", "olberic_story");
   settings.Add("chapter_end_olberic_3", false, "Chapter 3 End", "olberic_story");
-  settings.Add("fight_redhat", false, "Red Hat", "olberic_story");
+  settings.Add("fight_red_hat", false, "Red Hat", "olberic_story");
   settings.Add("fight_werner", false, "Werner", "olberic_story");
   settings.Add("chapter_end_olberic_4", false, "Chapter 4 End", "olberic_story");
 
@@ -229,50 +231,216 @@ startup
     settings.Add("advanced_job_fight_" + NameToKey(fight), true, fight, "advanced_job_fights");
   }
 
-  vars.AreaZoneIDs = new Dictionary<int, string> {
-    { 137, "Flamesgrace" },
-    { 76, "Atlasdam" },
-    { 114, "Rippletide" },
-    { 12, "Cobbleston" },
-    { 34, "Sunshade" },
-    { 56, "Clearbrook" },
-    { 94, "Bolderfall" },
-    { 158, "S'warkii" },
-    { 145, "Stillsnow" },
-    { 83, "Noblecourt" },
-    { 120, "Goldshore" },
-    { 13, "Stonegard" },
-    { 40, "Wellspring" },
-    { 62, "Saintsbridge" },
-    { 101, "Quarrycrest" },
-    { 164, "Victor's Hollow" },
-    { 152, "Northreach" },
-    { 89, "Wispermill" },
-    { 130, "Grandport" },
-    { 16, "Everhold" },
-    { 49, "Marsalim" },
-    { 70, "Riverford" },
-    { 108, "Orewell" },
-    { 171, "Duskbarrow" },
-    { 194, "Ruins of Hornburg" },
-    { 93, "Forest of Purgation" },
-    { 136, "Loch of the Lost King" },
-    { 33, "Everhold Tunnels" },
-    { 188, "Shrine of the Runeblade" },
-    { 55, "Marsalim Catacombs" },
-    { 69, "Farshore" },
-    { 189, "Shrine of the Warbringer" },
-    { 157, "Maw of the Ice Dragon" }
+  Func<string,string,int,ExpandoObject> CreateArea = (name, region, ring) => {
+    dynamic area = new ExpandoObject();
+    area.name = name;
+    area.region = region;
+    area.ring = ring;
+    return area;
+  };
+
+  vars.AreaZoneIDs = new Dictionary<int, ExpandoObject> {
+    { 12, CreateArea("Cobbleston", "Highlands", 1) },
+    { 13, CreateArea("Stonegard", "Highlands", 2) },
+    { 14, CreateArea("Stonegard Heights", "Highlands", 2) },
+    { 15, CreateArea("Stonegard Valleys", "Highlands", 2) },
+    { 16, CreateArea("Everhold", "Highlands", 3) },
+    { 17, CreateArea("Everhold Amphitheatre", "Highlands", 3) },
+    { 18, CreateArea("Mountain Pass", "Highlands", 1) },
+    { 19, CreateArea("North Cobbleston Gap", "Highlands", 1) },
+    { 20, CreateArea("South Cobbleston Gap", "Highlands", 1) },
+    { 21, CreateArea("Brigand's Den", "Highlands", 1) },
+    { 22, CreateArea("Untouched Sanctum", "Highlands", 1) },
+    { 23, CreateArea("Spectrewood Path", "Highlands", 2) },
+    { 24, CreateArea("North Stoneguard Pass", "Highlands", 2) },
+    { 25, CreateArea("West Stonegard Pass", "Highlands", 2) },
+    { 26, CreateArea("The Spectrewood", "Highlands", 2) },
+    { 27, CreateArea("Yvon's Cellar, Yvon's Birthplace", "Highlands", 2) },
+    { 28, CreateArea("Tomb of Kings", "Highlands", 2) },
+    { 29, CreateArea("West Everhold Pass", "Highlands", 3) },
+    { 30, CreateArea("Amphitheatre: Arena", "Highlands", 3) },
+    { 31, CreateArea("Amphitheatre: Balcony", "Highlands", 3) },
+    { 32, CreateArea("Everhold Amphitheatre (deeper into Prim 4, end of Prim 4)", "Highlands",  3) },
+    { 33, CreateArea("Everhold Tunnels", "Highlands", 3) },
+    { 34, CreateArea("Sunshade", "Sunlands", 1) },
+    { 35, CreateArea("Sunshade Tavern", "Sunlands", 1) },
+    { 36, CreateArea("Southern Sunshade Sands", "Sunlands", 1) },
+    { 37, CreateArea("Eastern Sunshade Sands", "Sunlands", 1) },
+    { 38, CreateArea("Sunshade Catacombs", "Sunlands", 1) },
+    { 39, CreateArea("Whistling Cavern", "Sunlands", 1) },
+    { 40, CreateArea("Wellspring", "Sunlands", 2) },
+    { 42, CreateArea("Western Wellspring Sands", "Sunlands", 2) },
+    { 43, CreateArea("Southern Wellspring Sands", "Sunlands", 2) },
+    { 44, CreateArea("Northern Wellspring Sands", "Sunlands", 2) },
+    { 45, CreateArea("Eastern Wellspring Sands", "Sunlands", 2) },
+    { 46, CreateArea("Lizardman's Den", "Sunlands", 2) },
+    { 47, CreateArea("Black Market", "Sunlands", 2) },
+    { 48, CreateArea("Quicksand Caves", "Sunlands", 2) },
+    { 49, CreateArea("Marsalim", "Sunlands", 3) },
+    { 50, CreateArea("Marsalim Palace", "Sunlands", 3) },
+    { 51, CreateArea("Grimsand Road", "Sunlands", 3) },
+    { 52, CreateArea("Eastern Marsalim Sands", "Sunlands", 3) },
+    { 53, CreateArea("Grimsand Ruins #1", "Sunlands", 3) },
+    { 54, CreateArea("Grimsand Ruins #2", "Sunlands", 3) },
+    { 55, CreateArea("Marsalim Catacombs", "Sunlands", 3) },
+    { 56, CreateArea("Clearbrook", "Riverlands", 1) },
+    { 57, CreateArea("Path of Rhiyo", "Riverlands", 1) },
+    { 58, CreateArea("South Clearbrook Traverse", "Riverlands", 1) },
+    { 59, CreateArea("West Clearbrook Traverse", "Riverlands", 1) },
+    { 60, CreateArea("Cave of Rhiyo", "Riverlands", 1) },
+    { 61, CreateArea("Twin Falls", "Riverlands", 1) },
+    { 62, CreateArea("Saintsbridge", "Riverlands", 2) },
+    { 63, CreateArea("Saintsbridge: Upstream", "Riverlands", 2) },
+    { 64, CreateArea("Saintsbridge Cathedral", "Riverlands", 2) },
+    { 65, CreateArea("Murkwood Trail", "Riverlands", 2) },
+    { 66, CreateArea("East Saintsbridge Traverse", "Riverlands", 2) },
+    { 67, CreateArea("The Murkwood", "Riverlands", 2) },
+    { 68, CreateArea("Rivira Woods", "Riverlands", 2) },
+    { 69, CreateArea("Farshore", "Riverlands", 2) },
+    { 70, CreateArea("Riverford", "Riverlands", 3) },
+    { 71, CreateArea("Manse Gardens, Lower Riverford", "Riverlands", 3) },
+    { 72, CreateArea("North Riverford Traverse", "Riverlands", 3) },
+    { 73, CreateArea("Hidden Path", "Riverlands", 3) },
+    { 74, CreateArea("Lord's Manse", "Riverlands", 3) },
+    { 75, CreateArea("Refuge Ruins", "Riverlands", 3) },
+    { 76, CreateArea("Atlasdam", "Flatlands", 1) },
+    { 77, CreateArea("Atlasdam Palace Gate, Royal Academy of Atlasdam", "Flatlands", 1) },
+    { 78, CreateArea("Atlasdam Palace", "Flatlands", 1) },
+    { 79, CreateArea("East Atlasdam Flats", "Flatlands", 1) },
+    { 80, CreateArea("North Atlasdam Flats", "Flatlands", 1) },
+    { 81, CreateArea("Subterranean Study", "Flatlands", 1) },
+    { 82, CreateArea("The Whistlewood", "Flatlands", 1) },
+    { 83, CreateArea("Noblecourt", "Flatlands", 2) },
+    { 84, CreateArea("East Noblecourt", "Flatlands", 2) },
+    { 85, CreateArea("Western Noblecourt Flats", "Flatlands", 2) },
+    { 86, CreateArea("Orlick's Manse", "Flatlands", 2) },
+    { 87, CreateArea("Obsidian Manse", "Flatlands", 2) },
+    { 88, CreateArea("The Hollow Throne", "Flatlands", 2) },
+    { 89, CreateArea("Wispermill", "Flatlands", 3) },
+    { 90, CreateArea("Western Wispermill Flats", "Flatlands", 3) },
+    { 91, CreateArea("Ebony Grotto #1", "Flatlands", 3) },
+    { 92, CreateArea("Ebony Grotto #2", "Flatlands", 3) },
+    { 93, CreateArea("Forest of Purgation", "Flatlands", 3) },
+    { 94, CreateArea("Bolderfall", "Clifflands", 1) },
+    { 95, CreateArea("Lower Bolderfall", "Clifflands", 1) },
+    { 96, CreateArea("Ruvus Manor Gate", "Clifflands", 1) },
+    { 97, CreateArea("North Bolderfall Pass", "Clifflands", 1) },
+    { 98, CreateArea("South Bolderfall Pass", "Clifflands", 1) },
+    { 99, CreateArea("Ravus Manor", "Clifflands", 1) },
+    { 100, CreateArea("Carrion Caves", "Clifflands", 1) },
+    { 101, CreateArea("Quarrycrest", "Clifflands", 2) },
+    { 102, CreateArea("Quarrycrest Mines", "Clifflands", 2) },
+    { 103, CreateArea("Road to Morlock's Manse", "Clifflands", 2) },
+    { 104, CreateArea("South Quarrycrest Pass", "Clifflands", 2) },
+    { 105, CreateArea("Morlock's Manse", "Clifflands", 2) },
+    { 106, CreateArea("The Sewers", "Clifflands", 2) },
+    { 107, CreateArea("Derelict Mine", "Clifflands", 2) },
+    { 108, CreateArea("Orewell", "Clifflands", 3) },
+    { 109, CreateArea("Trail to Forest of Rubeh", "Clifflands", 3) },
+    { 110, CreateArea("South Orewell Pass", "Clifflands", 3) },
+    { 111, CreateArea("Forest of Rubeh #1", "Clifflands", 3) },
+    { 112, CreateArea("Forest of Rubeh #2", "Clifflands", 3) },
+    { 113, CreateArea("Dragonsong Fane", "Clifflands", 3) },
+    { 114, CreateArea("Rippletide", "Coastlands", 1) },
+    { 115, CreateArea("Path to the Caves of Maiya", "Coastlands", 1) },
+    { 116, CreateArea("North Rippletide Coast", "Coastlands", 1) },
+    { 117, CreateArea("East Rippletide Coast", "Coastlands", 1) },
+    { 118, CreateArea("Caves of Maiya", "Coastlands", 1) },
+    { 119, CreateArea("Undertow Cave", "Coastlands", 1) },
+    { 120, CreateArea("Goldshore", "Coastlands", 2) },
+    { 121, CreateArea("Goldshore Manor District", "Coastlands", 2) },
+    { 122, CreateArea("Goldshore Cathedral", "Coastlands", 2) },
+    { 123, CreateArea("Road to the Seaside Grotto", "Coastlands", 2) },
+    { 124, CreateArea("Road to the Caves of Azure", "Coastlands", 2) },
+    { 125, CreateArea("West Goldshore Coast", "Coastlands", 2) },
+    { 126, CreateArea("Moonstruck Coast", "Coastlands", 2) },
+    { 127, CreateArea("Seaside Grotto", "Coastlands", 2) },
+    { 128, CreateArea("Caves of Azure", "Coastlands", 2) },
+    { 129, CreateArea("Captain's Bane", "Coastlands", 2) },
+    { 130, CreateArea("Grandport #1", "Coastlands", 3) },
+    { 131, CreateArea("Grandport #2", "Coastlands", 3) },
+    { 132, CreateArea("Grandport #3", "Coastlands", 3) },
+    { 133, CreateArea("West Grandport Coast", "Coastlands", 3) },
+    { 134, CreateArea("Grandport Sewers #1", "Coastlands", 3) },
+    { 135, CreateArea("Grandport Sewers #2", "Coastlands", 3) },
+    { 136, CreateArea("Loch of the Lost King", "Coastlands", 3) },
+    { 137, CreateArea("Flamesgrace #1", "Frostlands", 1) },
+    { 138, CreateArea("Flamesgrace #2", "Frostlands", 1) },
+    { 139, CreateArea("Flamesgrace Church", "Frostlands", 1) },
+    { 140, CreateArea("Path to the Cave of Origin", "Frostlands", 1) },
+    { 141, CreateArea("Western Flamesgrace Wilds", "Frostlands", 1) },
+    { 142, CreateArea("Northern Flamesgrace Wilds", "Frostlands", 1) },
+    { 143, CreateArea("Cave of Origin", "Frostlands", 1) },
+    { 144, CreateArea("Hoarfrost Grotto", "Frostlands", 1) },
+    { 145, CreateArea("Stillsnow", "Frostlands", 2) },
+    { 146, CreateArea("Trail to the Whitewood", "Frostlands", 2) },
+    { 147, CreateArea("Road to the Obsidian Parlor", "Frostlands", 2) },
+    { 148, CreateArea("Western Stillsnow Wilds", "Frostlands", 2) },
+    { 149, CreateArea("The Whitewood", "Frostlands", 2) },
+    { 150, CreateArea("Secret Path", "Frostlands", 2) },
+    { 151, CreateArea("Tomb of the Imperator", "Frostlands", 2) },
+    { 152, CreateArea("Northreach", "Frostlands", 3) },
+    { 153, CreateArea("Northreach: Lorn Cathedral", "Frostlands", 3) },
+    { 154, CreateArea("Southern Northreach Wilds", "Frostlands", 3) },
+    { 155, CreateArea("Lorn Cathedral: Cellars", "Frostlands", 3) },
+    { 156, CreateArea("Lorn Cathedral: Cellars #2", "Frostlands", 3) },
+    { 157, CreateArea("Maw of the Ice Dragon", "Frostlands", 3) },
+    { 158, CreateArea("S'warkii", "Woodlands", 1) },
+    { 159, CreateArea("Path to the Whisperwood", "Woodlands", 1) },
+    { 160, CreateArea("West S'warkii Trail", "Woodlands", 1) },
+    { 161, CreateArea("North S'warkii Trail", "Woodlands", 1) },
+    { 162, CreateArea("The Whisperwood", "Woodlands", 1) },
+    { 163, CreateArea("Path of Beasts", "Woodlands", 1) },
+    { 164, CreateArea("Victor's Hollow", "Woodlands", 2) },
+    { 165, CreateArea("Victor's Hollow: Arena Gate", "Woodlands", 2) },
+    { 166, CreateArea("Victor's Hollow: Arena", "Woodlands", 2) },
+    { 167, CreateArea("Path to the Forgotten Grotto", "Woodlands", 2) },
+    { 168, CreateArea("East Victor's Hollow Trail", "Woodlands", 2) },
+    { 169, CreateArea("Forgotten Grotto", "Woodlands", 2) },
+    { 170, CreateArea("Forest of No Return", "Woodlands", 2) },
+    { 171, CreateArea("Duskbarrow", "Woodlands", 3) },
+    { 172, CreateArea("East Duskbarrow Trail", "Woodlands", 3) },
+    { 173, CreateArea("Ruins of Eld #1", "Woodlands", 3) },
+    { 174, CreateArea("Ruins of Eld #2", "Woodlands", 3) },
+    { 175, CreateArea("Moldering Ruins", "Woodlands", 3) },
+    { 179, CreateArea("Shrine of the Flamebearer", "Frostlands", 2) },
+    { 180, CreateArea("Shrine of the Sage", "Flatlands", 2) },
+    { 181, CreateArea("Shrine of the Trader", "Coastlands", 2) },
+    { 182, CreateArea("Shrine of the Thunderblade", "Highlands", 2) },
+    { 183, CreateArea("Shrine of the Lady of Grace", "Sunlands", 2) },
+    { 184, CreateArea("Shrine of the Healer", "Frostlands", 2) },
+    { 185, CreateArea("Shrine of the Prince of Thieves", "Clifflands", 2) },
+    { 186, CreateArea("Shrine of the Huntress", "Woodlands", 2) },
+    { 187, CreateArea("Shrine of the Starseer", "Flatlands", 3) },
+    { 188, CreateArea("Shrine of the Runeblade", "Highlands", 3) },
+    { 189, CreateArea("Shrine of the Warbringer", "Riverlands", 3) },
+    { 190, CreateArea("Shrine of the Archmagus", "Woodlands", 3) },
+    { 193, CreateArea("Obsidian Parlor", "Frostlands", 2) },
+    { 194, CreateArea("Ruins of Hornburg", "Highlands", 3) },
+    { 195, CreateArea("The Gate of Finis", "Highlands", 3) },
+    { 196, CreateArea("Journey's End", "Highlands", 3) },
   };
 
   settings.Add("enter_exit_area", true, "Enter / Exit Area");
   settings.SetToolTip("enter_exit_area", "Split on entering and/or exiting an area.");
 
-  foreach (var areaName in vars.AreaZoneIDs.Values) {
-    string areaKey = NameToKey(areaName);
-    settings.Add(areaKey, true, areaName, "enter_exit_area");
-    settings.Add("enter_" + areaKey, false, "Enter", areaKey);
-    settings.Add("exit_" + areaKey, false, "Exit", areaKey);
+  string[] regions = new string[] { "Frostlands", "Flatlands", "Coastlands", "Highlands", "Sunlands", "Riverlands", "Clifflands", "Woodlands" };
+  int[] rings = new int[] { 1, 2, 3 };
+  foreach (var region in regions) {
+    string regionKey = NameToKey(region);
+    settings.Add("enter_exit_area_" + regionKey, true, region, "enter_exit_area");
+    foreach (var ring in rings) {
+      settings.Add("enter_exit_area_" + regionKey + "_" + ring, true, "Ring " + ring, "enter_exit_area_" + regionKey);
+    }
+  }
+
+  foreach (var areaInfo in vars.AreaZoneIDs) {
+    var area = areaInfo.Value;
+    int zoneID = areaInfo.Key;
+    string parentKey = "enter_exit_area_" + NameToKey(area.region) + "_" + area.ring; 
+    settings.Add("area_"+ zoneID, true, area.name, parentKey);
+    settings.Add("enter_" + zoneID, false, "Enter", "area_" + zoneID);
+    settings.Add("exit_" + zoneID, false, "Exit", "area_" + zoneID);
   }
 
   settings.Add("split_characters", false, "Split On Characters");
@@ -335,24 +503,23 @@ split
 
   // Enter Area
   if (vars.AreaZoneIDs.ContainsKey(current.zoneID) && old.zoneID != current.zoneID && old.zoneID != 0 && old.gameState == 2) {
-    return vars.Split("enter_" + vars.NameToKey(vars.AreaZoneIDs[current.zoneID]));
+    return vars.Split("enter_" + current.zoneID);
   }
 
   // Exit Area
   if (current.zoneID != 0 && current.zoneID != old.zoneID && vars.AreaZoneIDs.ContainsKey(old.zoneID) && (old.gameState == 2 || old.gameState == 4)) {
-    return vars.Split("exit_" + vars.NameToKey(vars.AreaZoneIDs[old.zoneID]));
+    return vars.Split("exit_" + old.zoneID);
   }
 
-  // Characters
-  if(old.ophiliaProgress == 0 && current.ophiliaProgress >= 100) return vars.Split("character_ophilia");
+  // Characters Joining
+  if(old.ophiliaProgress == 0 && current.ophiliaProgress >= 120) return vars.Split("character_ophilia");
   if(old.cyrusProgress == 0 && current.cyrusProgress >= 100) return vars.Split("character_cyrus");
-  if(old.tressaProgress == 0 && current.tressaProgress >= 100) return vars.Split("character_tressa");
-  if(old.olbericProgress == 0 && current.olbericProgress >= 100) return vars.Split("character_olberic");
-  if(old.primroseProgress == 0 && current.primroseProgress >= 100) return vars.Split("character_primrose");
-  if(old.alfynProgress == 0 && current.alfynProgress >= 90) return vars.Split("character_alfyn");
-  if(old.haanitProgress == 0 && current.haanitProgress >= 100) return vars.Split("character_haanit");
-  if(old.therionProgress == 0 && current.therionProgress >= 100) return vars.Split("character_therion");
-
+  if(old.tressaProgress == 0 && current.tressaProgress >= 110) return vars.Split("character_tressa");
+  if(old.olbericProgress == 0 && current.olbericProgress >= 110) return vars.Split("character_olberic");
+  if(old.primroseProgress == 0 && current.primroseProgress >= 140) return vars.Split("character_primrose");
+  if(old.alfynProgress == 0 && current.alfynProgress >= 70) return vars.Split("character_alfyn");
+  if(old.haanitProgress == 0 && current.haanitProgress >= 110) return vars.Split("character_haanit");
+  if(old.therionProgress == 0 && current.therionProgress >= 70) return vars.Split("character_therion");
 
   // Ophilia
   if (old.ophiliaProgress < current.ophiliaProgress && old.zoneID != 0) {
@@ -428,7 +595,9 @@ split
 
   // Olberic
   if (old.olbericProgress < current.olbericProgress && old.zoneID != 0) {
-    if (current.olbericProgress == 160) return vars.Split("fight_gaston");
+    if (current.olbericProgress == 110) return vars.Split("fight_brigands1");
+    else if (current.olbericProgress == 140) return vars.Split("fight_brigands2");
+    else if (current.olbericProgress == 160) return vars.Split("fight_gaston");
     else if (current.olbericProgress == 1070) return vars.Split("fight_victorino");
     else if (current.olbericProgress == 1140) return vars.Split("fight_joshua");
     else if (current.olbericProgress == 1180) return vars.Split("fight_archibold");
@@ -437,7 +606,7 @@ split
     else if (current.olbericProgress == 2080) return vars.Split("fight_lizards2");
     else if (current.olbericProgress == 2110) return vars.Split("fight_lizardking");
     else if (current.olbericProgress == 2130) return vars.Split("fight_erhardt");
-    else if (current.olbericProgress == 3050) return vars.Split("fight_red Hat");
+    else if (current.olbericProgress == 3050) return vars.Split("fight_red_hat");
     else if (current.olbericProgress == 3110) return vars.Split("fight_werner");
     else if (current.olbericProgress % 1000 == 0) {
       vars.isChapterEnding = true;
@@ -466,7 +635,6 @@ split
   if (current.alfynProgress == 3300 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 93)) {
     return vars.Split("character_story_endings_alfyn");
   }
-
 
   // Therion
   if (old.therionProgress != current.therionProgress && old.zoneID != 0) {

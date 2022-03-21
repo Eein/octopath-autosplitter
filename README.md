@@ -5,7 +5,9 @@
 3. Edit Layout
   1. Add `Control` > `Scriptable Auto Splitter` component to the layout.
   2. Double Click `Scriptable Auto Splitter` to edit its settings.
-  3. Select desired options for your run!
+  3. Click `Browse`, and open the downloaded `octopath.asl` file.
+    - On first load, all the setting are automatically expanded. I recommend pressing `OK` to close settings, and re-opening them. They will no longer be expanded and will be much more managable.
+  4. Select desired options for your run!
 
 ## Usage
 Note that you will likely need a different layout for each category, to store different autosplitter settings. Testing needed, and can possibly be improved.
@@ -26,6 +28,7 @@ Note that you will likely need a different layout for each category, to store di
 - **Get Shrines**: Split as you get the Job from the shrine.
 - **Advanced Job Fights**: Split after finishing an advanced job fight.
 - **Enter / Exit Area:**: Split when you enter or exit an area.
+  * Areas are sorted by Region > Ring > Area
 - **Split On Characters**: Split when you say "Yes" to a character joining you.
   * Don't enable for your starting character, or it will split at the start.
 - **Galdera**: Splits for Galdera
