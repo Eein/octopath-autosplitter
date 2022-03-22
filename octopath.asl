@@ -62,6 +62,25 @@ init
     return false;
   };
   vars.SplitChapter = SplitChapter;
+
+  vars.deaths = 0;
+  vars.encounters = 0;
+  vars.counterTextComponent = -1;
+
+  Func<string> UpdateCounter = () => vars.counterTextComponent.Settings.Text2 = vars.encounters + "/" + vars.deaths;
+  vars.UpdateCounter = UpdateCounter;
+
+  // Stole this from FF13 Autosplitter, thanks Roosta :)
+  // Might be better implementation possible
+  foreach (LiveSplit.UI.Components.IComponent component in timer.Layout.Components) {
+	  if (component.GetType().Name == "TextComponent") {
+		  if (settings["encounter_death_counter"] == true & vars.counterTextComponent == -1) {
+        vars.counterTextComponent = component;
+        vars.counterTextComponent.Settings.Text1 = "Encounters / Deaths";
+        UpdateCounter();
+      }
+		}
+  }
 }
 
 update
@@ -69,6 +88,21 @@ update
   if (timer.CurrentPhase == TimerPhase.NotRunning) {
     vars.Splits.Clear();
     vars.ClearCharacterEnding();
+
+    // Encounter / Death Counter logic 
+    if (settings["encounter_death_counter"]) {
+      vars.deaths = 0;
+      vars.encounters = 0;
+      vars.UpdateCounter();
+    }
+  } else if (timer.CurrentPhase == TimerPhase.Running) {
+    if (current.gameState == 6 && old.gameState == 2) {
+      vars.encounters = vars.encounters + 1;
+      vars.UpdateCounter();
+    } else if (current.gameState == 7 && old.gameState == 6) {
+      vars.deaths = vars.deaths + 1;
+      vars.UpdateCounter();
+    }
   }
 }
 
@@ -465,6 +499,8 @@ startup
 
   settings.Add("credits", false, "Credits");
   settings.SetToolTip("credits", "Split on Credits Start. Slightly late for ending on final cutscene before credits.");
+
+  settings.Add("encounter_death_counter", false, "Override Text Component with a Enounter / Death Counter.");
 }
 
 start
