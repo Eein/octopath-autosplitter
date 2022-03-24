@@ -506,9 +506,8 @@ startup
 start
 {
   if (timer.CurrentPhase == TimerPhase.NotRunning &&
+      old.start == 0 &&
       current.start == 1 &&
-      old.characterIsHighlighted == 1 &&
-      current.characterIsHighlighted == 1 &&
       current.zoneID == 0) {
     return true;
   }
