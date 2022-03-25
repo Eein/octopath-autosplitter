@@ -76,15 +76,15 @@ init
   // Might be better implementation possible
   foreach (LiveSplit.UI.Components.IComponent component in timer.Layout.Components) 
   {
-	  if (component.GetType().Name == "TextComponent") 
+    if (component.GetType().Name == "TextComponent") 
     {
-		  if (settings["encounter_death_counter"] == true & vars.counterTextComponent == -1) 
+      if (settings["encounter_death_counter"] == true & vars.counterTextComponent == -1) 
       {
         vars.counterTextComponent = component;
         vars.counterTextComponent.Settings.Text1 = "Encounters / Deaths";
         vars.UpdateCounter();
       }
-		}
+    }
   }
 }
 
