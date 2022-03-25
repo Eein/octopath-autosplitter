@@ -1,25 +1,25 @@
 state("Octopath_Traveler-Win64-Shipping")
 {
-  int start: 0x2B32C48, 0xE30;
-  int characterIsHighlighted: 0x289D268, 0x368, 0x0, 0x328;
+  int Start: 0x2B32C48, 0xE30;
+  int CharacterIsHighlighted: 0x289D268, 0x368, 0x0, 0x328;
 
-  int zoneID: 0x289D240, 0x36C;
-  int money: 0x0289CC48, 0x370, 0x158;
-  int gameState: 0x0289D270, 0x36C;
-  int cutsceneScriptIndex: 0x289D230, 0x388;
+  int ZoneID: 0x289D240, 0x36C;
+  int Money: 0x0289CC48, 0x370, 0x158;
+  int GameState: 0x0289D270, 0x36C;
+  int CutsceneScriptIndex: 0x289D230, 0x388;
 
   
-  // Works but other is better? float cutsceneProgressBar: 0x0289D268, 0x378, 0x20, 0x230, 0xD0, 0x350;
-  float cutsceneProgressBar: 0x0289D268, 0x378, 0x20, 0x230, 0x288;
+  // Works but other is better? float CutsceneProgressBar: 0x0289D268, 0x378, 0x20, 0x230, 0xD0, 0x350;
+  float CutsceneProgressBar: 0x0289D268, 0x378, 0x20, 0x230, 0x288;
 
-  int ophiliaProgress: 0x0289CC48, 0x370, 0x1C8, 0x510;
-  int cyrusProgress: 0x0289CC48, 0x370, 0x1C8, 0x1f0;
-  int tressaProgress: 0x0289CC48, 0x370, 0x1C8, 0x128;
-  int olbericProgress: 0x0289CC48, 0x370, 0x1C8, 0x60;
-  int primroseProgress: 0x0289CC48, 0x370, 0x1C8, 0x2b8;
-  int alfynProgress: 0x0289CC48, 0x370, 0x1C8, 0x5d8;
-  int therionProgress: 0x0289CC48, 0x370, 0x1C8, 0x448;
-  int haanitProgress: 0x0289CC48, 0x370, 0x1C8, 0x380;
+  int OphiliaProgress: 0x0289CC48, 0x370, 0x1C8, 0x510;
+  int CyrusProgress: 0x0289CC48, 0x370, 0x1C8, 0x1f0;
+  int TressaProgress: 0x0289CC48, 0x370, 0x1C8, 0x128;
+  int OlbericProgress: 0x0289CC48, 0x370, 0x1C8, 0x60;
+  int PrimroseProgress: 0x0289CC48, 0x370, 0x1C8, 0x2b8;
+  int AlfynProgress: 0x0289CC48, 0x370, 0x1C8, 0x5d8;
+  int TherionProgress: 0x0289CC48, 0x370, 0x1C8, 0x448;
+  int HaanitProgress: 0x0289CC48, 0x370, 0x1C8, 0x380;
 }
 
 init 
@@ -63,13 +63,13 @@ init
     return false;
   });
 
-  vars.deaths = 0;
-  vars.encounters = 0;
-  vars.counterTextComponent = -1;
+  vars.Deaths = 0;
+  vars.Encounters = 0;
+  vars.CounterTextComponent = -1;
 
   vars.UpdateCounter = (Action) (() => 
   {
-    vars.counterTextComponent.Settings.Text2 = vars.encounters + "/" + vars.deaths;
+    vars.CounterTextComponent.Settings.Text2 = vars.Encounters + "/" + vars.Deaths;
   });
 
   // Stole this from FF13 Autosplitter, thanks Roosta :)
@@ -78,10 +78,10 @@ init
   {
     if (component.GetType().Name == "TextComponent") 
     {
-      if (settings["encounter_death_counter"] == true & vars.counterTextComponent == -1) 
+      if (settings["encounter_death_counter"] == true & vars.CounterTextComponent == -1) 
       {
-        vars.counterTextComponent = component;
-        vars.counterTextComponent.Settings.Text1 = "Encounters / Deaths";
+        vars.CounterTextComponent = component;
+        vars.CounterTextComponent.Settings.Text1 = "Encounters / Deaths";
         vars.UpdateCounter();
       }
     }
@@ -92,8 +92,8 @@ onReset
 {
   vars.Splits.Clear();
   vars.ClearCharacterEnding();
-  vars.deaths = 0;
-  vars.encounters = 0;
+  vars.Deaths = 0;
+  vars.Encounters = 0;
   vars.UpdateCounter();
 }
 
@@ -261,14 +261,6 @@ startup
   {
     settings.Add("advanced_job_fight_" + vars.NameToKey(fight), true, fight, "advanced_job_fights");
   }
-
-  Func<string,string,int,ExpandoObject> CreateArea = (name, region, ring) => {
-    dynamic area = new ExpandoObject();
-    area.name = name;
-    area.region = region;
-    area.ring = ring;
-    return area;
-  };
 
   vars.AreaZoneIDs = new Dictionary<int,dynamic>
   {
@@ -467,11 +459,11 @@ startup
 
   foreach (var areaInfo in vars.AreaZoneIDs) {
     var area = areaInfo.Value;
-    int zoneID = areaInfo.Key;
+    int ZoneID = areaInfo.Key;
     string parentKey = "enter_exit_area_" + vars.NameToKey(area.region) + "_" + area.ring; 
-    settings.Add("area_"+ zoneID, true, area.name, parentKey);
-    settings.Add("enter_" + zoneID, false, "Enter", "area_" + zoneID);
-    settings.Add("exit_" + zoneID, false, "Exit", "area_" + zoneID);
+    settings.Add("area_"+ ZoneID, true, area.name, parentKey);
+    settings.Add("enter_" + ZoneID, false, "Enter", "area_" + ZoneID);
+    settings.Add("exit_" + ZoneID, false, "Exit", "area_" + ZoneID);
   }
 
   settings.Add("split_characters", false, "Split On Characters");
@@ -502,12 +494,12 @@ startup
 
 start
 {
-  return old.start == 0 && current.start == 1 && current.zoneID == 0;
+  return old.Start == 0 && current.Start == 1 && current.ZoneID == 0;
 }
 
 reset
 {
-  return current.characterIsHighlighted == 1 && old.characterIsHighlighted == 0 && current.zoneID == 0; 
+  return current.CharacterIsHighlighted == 1 && old.CharacterIsHighlighted == 0 && current.ZoneID == 0; 
 }
 
 split 
@@ -515,62 +507,62 @@ split
   // Encounter/Death Tracker
   if (settings["encounter_death_counter"]) 
   {
-    if (current.gameState == 6 && old.gameState == 2) 
+    if (current.GameState == 6 && old.GameState == 2) 
     {
-      vars.encounters = vars.encounters + 1;
+      vars.Encounters = vars.Encounters + 1;
       vars.UpdateCounter();
     } 
-    else if (current.gameState == 7 && old.gameState == 6) 
+    else if (current.GameState == 7 && old.GameState == 6) 
     {
-      vars.deaths = vars.deaths + 1;
+      vars.Deaths = vars.Deaths + 1;
       vars.UpdateCounter();
     }
   }
 
   // Shrines
   string outValue;
-  if (vars.ShrineZoneIDs.TryGetValue(current.zoneID, out outValue) && current.gameState == 5 && old.gameState == 2) 
+  if (vars.ShrineZoneIDs.TryGetValue(current.ZoneID, out outValue) && current.GameState == 5 && old.GameState == 2) 
   {
     return vars.Split("get_" + vars.NameToKey(outValue));
   }
 
   // Advanced Job Fights
-  if (vars.AdvancedJobFights.TryGetValue(current.zoneID, out outValue) && current.gameState == 5 && old.gameState == 6) 
+  if (vars.AdvancedJobFights.TryGetValue(current.ZoneID, out outValue) && current.GameState == 5 && old.GameState == 6) 
   {
     return vars.Split("advanced_job_fight_" + vars.NameToKey(outValue));
   }
 
   // Enter Area
-  if (vars.AreaZoneIDs.ContainsKey(current.zoneID) && old.zoneID != current.zoneID && old.zoneID != 0 && old.gameState == 2) 
+  if (vars.AreaZoneIDs.ContainsKey(current.ZoneID) && old.ZoneID != current.ZoneID && old.ZoneID != 0 && old.GameState == 2) 
   {
-    return vars.Split("enter_" + current.zoneID);
+    return vars.Split("enter_" + current.ZoneID);
   }
 
   // Exit Area
-  if (current.zoneID != 0 && current.zoneID != old.zoneID && vars.AreaZoneIDs.ContainsKey(old.zoneID) && (old.gameState == 2 || old.gameState == 4)) 
+  if (current.ZoneID != 0 && current.ZoneID != old.ZoneID && vars.AreaZoneIDs.ContainsKey(old.ZoneID) && (old.GameState == 2 || old.GameState == 4)) 
   {
-    return vars.Split("exit_" + old.zoneID);
+    return vars.Split("exit_" + old.ZoneID);
   }
 
   // Characters Joining
-  if(old.ophiliaProgress == 0 && current.ophiliaProgress >= 120) return vars.Split("character_ophilia");
-  if(old.cyrusProgress == 0 && current.cyrusProgress >= 100) return vars.Split("character_cyrus");
-  if(old.tressaProgress == 0 && current.tressaProgress >= 110) return vars.Split("character_tressa");
-  if(old.olbericProgress == 0 && current.olbericProgress >= 110) return vars.Split("character_olberic");
-  if(old.primroseProgress == 0 && current.primroseProgress >= 140) return vars.Split("character_primrose");
-  if(old.alfynProgress == 0 && current.alfynProgress >= 70) return vars.Split("character_alfyn");
-  if(old.haanitProgress == 0 && current.haanitProgress >= 110) return vars.Split("character_haanit");
-  if(old.therionProgress == 0 && current.therionProgress >= 70) return vars.Split("character_therion");
+  if(old.OphiliaProgress == 0 && current.OphiliaProgress >= 120) return vars.Split("character_ophilia");
+  if(old.CyrusProgress == 0 && current.CyrusProgress >= 100) return vars.Split("character_cyrus");
+  if(old.TressaProgress == 0 && current.TressaProgress >= 110) return vars.Split("character_tressa");
+  if(old.OlbericProgress == 0 && current.OlbericProgress >= 110) return vars.Split("character_olberic");
+  if(old.PrimroseProgress == 0 && current.PrimroseProgress >= 140) return vars.Split("character_primrose");
+  if(old.AlfynProgress == 0 && current.AlfynProgress >= 70) return vars.Split("character_alfyn");
+  if(old.HaanitProgress == 0 && current.HaanitProgress >= 110) return vars.Split("character_haanit");
+  if(old.TherionProgress == 0 && current.TherionProgress >= 70) return vars.Split("character_therion");
 
   // Ophilia
-  if (old.ophiliaProgress < current.ophiliaProgress && old.zoneID != 0) 
+  if (old.OphiliaProgress < current.OphiliaProgress && old.ZoneID != 0) 
   {
-    if (current.ophiliaProgress == 170) return vars.Split("fight_guardian");
-    else if (current.ophiliaProgress == 1140) return vars.Split("fight_hrodvitnir");
-    else if (current.ophiliaProgress == 2110) return vars.Split("fight_mm_sf");
-    else if (current.ophiliaProgress == 3090) return vars.Split("fight_cultists");
-    else if (current.ophiliaProgress == 3150) return vars.Split("fight_mattias");
-    else if (current.ophiliaProgress % 1000 == 0) 
+    if (current.OphiliaProgress == 170) return vars.Split("fight_guardian");
+    else if (current.OphiliaProgress == 1140) return vars.Split("fight_hrodvitnir");
+    else if (current.OphiliaProgress == 2110) return vars.Split("fight_mm_sf");
+    else if (current.OphiliaProgress == 3090) return vars.Split("fight_cultists");
+    else if (current.OphiliaProgress == 3150) return vars.Split("fight_mattias");
+    else if (current.OphiliaProgress % 1000 == 0) 
     {
       vars.IsChapterEnding = true;
       vars.CharChapterEnding = "Ophilia";
@@ -578,19 +570,19 @@ split
   }
 
   // Ophilia Ending
-  if (current.ophiliaProgress == 3160 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 94)) 
+  if (current.OphiliaProgress == 3160 && (current.CutsceneProgressBar > 0.98 || current.CutsceneScriptIndex > 94)) 
   {
     return vars.Split("character_story_endings_ophilia");
   }
 
   // Cyrus
-  if (old.cyrusProgress != current.cyrusProgress && old.zoneID != 0) 
+  if (old.CyrusProgress != current.CyrusProgress && old.ZoneID != 0) 
   {
-    if (current.cyrusProgress == 130) return vars.Split("fight_russell");
-    else if (current.cyrusProgress == 1110) return vars.Split("fight_gideon");
-    else if (current.cyrusProgress == 2160) return vars.Split("fight_yvon");
-    else if (current.cyrusProgress == 3060) return vars.Split("fight_lucia");
-    else if (current.cyrusProgress % 1000 == 0) 
+    if (current.CyrusProgress == 130) return vars.Split("fight_russell");
+    else if (current.CyrusProgress == 1110) return vars.Split("fight_gideon");
+    else if (current.CyrusProgress == 2160) return vars.Split("fight_yvon");
+    else if (current.CyrusProgress == 3060) return vars.Split("fight_lucia");
+    else if (current.CyrusProgress % 1000 == 0) 
     {
       vars.IsChapterEnding = true;
       vars.CharChapterEnding = "Cyrus";
@@ -598,19 +590,19 @@ split
   }
 
   // Cyrus Ending
-  if (current.cyrusProgress == 3110 && current.cutsceneScriptIndex >= 138 && current.cutsceneProgressBar > 0.98) 
+  if (current.CyrusProgress == 3110 && current.CutsceneScriptIndex >= 138 && current.CutsceneProgressBar > 0.98) 
   {
     return vars.Split("character_story_endings_cyrus");
   }
 
   // Tressa
-  if (old.tressaProgress != current.tressaProgress && old.zoneID != 0) 
+  if (old.TressaProgress != current.TressaProgress && old.ZoneID != 0) 
   {
-    if (current.tressaProgress == 170) return vars.Split("fight_mikk_makk");
-    else if (current.tressaProgress == 1120) return vars.Split("fight_omar");
-    else if (current.tressaProgress == 2150) return vars.Split("fight_venomtooth_tiger");
-    else if (current.tressaProgress == 3120) return vars.Split("fight_esmeralda");
-    else if (current.tressaProgress % 1000 == 0) 
+    if (current.TressaProgress == 170) return vars.Split("fight_mikk_makk");
+    else if (current.TressaProgress == 1120) return vars.Split("fight_omar");
+    else if (current.TressaProgress == 2150) return vars.Split("fight_venomtooth_tiger");
+    else if (current.TressaProgress == 3120) return vars.Split("fight_esmeralda");
+    else if (current.TressaProgress % 1000 == 0) 
     {
       vars.IsChapterEnding = true;
       vars.CharChapterEnding = "Tressa";
@@ -618,20 +610,20 @@ split
   }
 
   // Tressa Ending
-  if (current.tressaProgress == 3180 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 209)) 
+  if (current.TressaProgress == 3180 && (current.CutsceneProgressBar > 0.98 || current.CutsceneScriptIndex > 209)) 
   {
     return vars.Split("character_story_endings_tressa");
   }
 
   // Primrose
-  if (old.primroseProgress != current.primroseProgress && old.zoneID != 0) 
+  if (old.PrimroseProgress != current.PrimroseProgress && old.ZoneID != 0) 
   {
-    if (current.primroseProgress == 160) return vars.Split("fight_helgenish");
-    else if (current.primroseProgress == 1180) return vars.Split("fight_rufus");
-    else if (current.primroseProgress == 2170) return vars.Split("fight_albus");
-    else if (current.primroseProgress == 3120) return vars.Split("fight_simeon1");
-    else if (current.primroseProgress == 3150) return vars.Split("fight_simeon2");
-    else if (current.primroseProgress % 1000 == 0) 
+    if (current.PrimroseProgress == 160) return vars.Split("fight_helgenish");
+    else if (current.PrimroseProgress == 1180) return vars.Split("fight_rufus");
+    else if (current.PrimroseProgress == 2170) return vars.Split("fight_albus");
+    else if (current.PrimroseProgress == 3120) return vars.Split("fight_simeon1");
+    else if (current.PrimroseProgress == 3150) return vars.Split("fight_simeon2");
+    else if (current.PrimroseProgress % 1000 == 0) 
     {
       vars.IsChapterEnding = true;
       vars.CharChapterEnding = "Primrose";
@@ -639,28 +631,28 @@ split
   }
 
   // Primrose Ending
-  if (current.primroseProgress == 3150 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 94)) 
+  if (current.PrimroseProgress == 3150 && (current.CutsceneProgressBar > 0.98 || current.CutsceneScriptIndex > 94)) 
   {
     return vars.Split("character_story_endings_primrose");
   }
 
   // Olberic
-  if (old.olbericProgress < current.olbericProgress && old.zoneID != 0) 
+  if (old.OlbericProgress < current.OlbericProgress && old.ZoneID != 0) 
   {
-    if (current.olbericProgress == 110) return vars.Split("fight_brigands1");
-    else if (current.olbericProgress == 140) return vars.Split("fight_brigands2");
-    else if (current.olbericProgress == 160) return vars.Split("fight_gaston");
-    else if (current.olbericProgress == 1070) return vars.Split("fight_victorino");
-    else if (current.olbericProgress == 1140) return vars.Split("fight_joshua");
-    else if (current.olbericProgress == 1180) return vars.Split("fight_archibold");
-    else if (current.olbericProgress == 1220) return vars.Split("fight_gustav");
-    else if (current.olbericProgress == 2070) return vars.Split("fight_lizards1");
-    else if (current.olbericProgress == 2080) return vars.Split("fight_lizards2");
-    else if (current.olbericProgress == 2110) return vars.Split("fight_lizardking");
-    else if (current.olbericProgress == 2130) return vars.Split("fight_erhardt");
-    else if (current.olbericProgress == 3050) return vars.Split("fight_red_hat");
-    else if (current.olbericProgress == 3110) return vars.Split("fight_werner");
-    else if (current.olbericProgress % 1000 == 0) 
+    if (current.OlbericProgress == 110) return vars.Split("fight_brigands1");
+    else if (current.OlbericProgress == 140) return vars.Split("fight_brigands2");
+    else if (current.OlbericProgress == 160) return vars.Split("fight_gaston");
+    else if (current.OlbericProgress == 1070) return vars.Split("fight_victorino");
+    else if (current.OlbericProgress == 1140) return vars.Split("fight_joshua");
+    else if (current.OlbericProgress == 1180) return vars.Split("fight_archibold");
+    else if (current.OlbericProgress == 1220) return vars.Split("fight_gustav");
+    else if (current.OlbericProgress == 2070) return vars.Split("fight_lizards1");
+    else if (current.OlbericProgress == 2080) return vars.Split("fight_lizards2");
+    else if (current.OlbericProgress == 2110) return vars.Split("fight_lizardking");
+    else if (current.OlbericProgress == 2130) return vars.Split("fight_erhardt");
+    else if (current.OlbericProgress == 3050) return vars.Split("fight_red_hat");
+    else if (current.OlbericProgress == 3110) return vars.Split("fight_werner");
+    else if (current.OlbericProgress % 1000 == 0) 
     {
       vars.IsChapterEnding = true;
       vars.CharChapterEnding = "Olberic";
@@ -668,19 +660,19 @@ split
   }
 
   // Olberic Ending
-  if (current.olbericProgress == 3120 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 174)) 
+  if (current.OlbericProgress == 3120 && (current.CutsceneProgressBar > 0.98 || current.CutsceneScriptIndex > 174)) 
   {
     return vars.Split("character_story_endings_olberic");
   }
 
   // Alfyn
-  if (old.alfynProgress != current.alfynProgress && old.zoneID != 0) 
+  if (old.AlfynProgress != current.AlfynProgress && old.ZoneID != 0) 
   {
-    if (current.alfynProgress == 90) return vars.Split("fight_blotted_viper");
-    else if (current.alfynProgress == 1130) return vars.Split("fight_vanessa");
-    else if (current.alfynProgress == 2140) return vars.Split("fight_miguel");
-    else if (current.alfynProgress == 3240) return vars.Split("fight_ogre_eagle");
-    else if (current.alfynProgress % 1000 == 0) 
+    if (current.AlfynProgress == 90) return vars.Split("fight_blotted_viper");
+    else if (current.AlfynProgress == 1130) return vars.Split("fight_vanessa");
+    else if (current.AlfynProgress == 2140) return vars.Split("fight_miguel");
+    else if (current.AlfynProgress == 3240) return vars.Split("fight_ogre_eagle");
+    else if (current.AlfynProgress % 1000 == 0) 
     {
       vars.IsChapterEnding = true;
       vars.CharChapterEnding = "Alfyn";
@@ -688,22 +680,22 @@ split
   }
   
   // Alfyn Ending
-  if (current.alfynProgress == 3300 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 93)) 
+  if (current.AlfynProgress == 3300 && (current.CutsceneProgressBar > 0.98 || current.CutsceneScriptIndex > 93)) 
   {
     return vars.Split("character_story_endings_alfyn");
   }
 
   // Therion
-  if (old.therionProgress != current.therionProgress && old.zoneID != 0) 
+  if (old.TherionProgress != current.TherionProgress && old.ZoneID != 0) 
   {
-    if (current.therionProgress == 140) return vars.Split("fight_heathecote");
-    else if (current.therionProgress == 1130) return vars.Split("fight_orlick");
-    else if (current.therionProgress == 2100) return vars.Split("fight_darius_henchmen");
-    else if (current.therionProgress == 2150) return vars.Split("fight_gareth");
-    else if (current.therionProgress == 3040) return vars.Split("fight_darius_underlings");
-    else if (current.therionProgress == 3140) return vars.Split("3_percent_steal");
-    else if (current.therionProgress == 3180) return vars.Split("fight_darius");
-    else if (current.therionProgress % 1000 == 0) 
+    if (current.TherionProgress == 140) return vars.Split("fight_heathecote");
+    else if (current.TherionProgress == 1130) return vars.Split("fight_orlick");
+    else if (current.TherionProgress == 2100) return vars.Split("fight_darius_henchmen");
+    else if (current.TherionProgress == 2150) return vars.Split("fight_gareth");
+    else if (current.TherionProgress == 3040) return vars.Split("fight_darius_underlings");
+    else if (current.TherionProgress == 3140) return vars.Split("3_percent_steal");
+    else if (current.TherionProgress == 3180) return vars.Split("fight_darius");
+    else if (current.TherionProgress % 1000 == 0) 
     {
       vars.IsChapterEnding = true;
       vars.CharChapterEnding = "Therion";
@@ -711,22 +703,22 @@ split
   }
 
   // Therion Ending
-  if (current.therionProgress == 3200 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 275)) 
+  if (current.TherionProgress == 3200 && (current.CutsceneProgressBar > 0.98 || current.CutsceneScriptIndex > 275)) 
   {
     return vars.Split("character_story_endings_therion");
   }
 
   // H'aanit
-  if (old.haanitProgress != current.haanitProgress && old.zoneID != 0) 
+  if (old.HaanitProgress != current.HaanitProgress && old.ZoneID != 0) 
   {
-    if (current.haanitProgress == 110) return vars.Split("fight_ghisarma");
-    else if (current.haanitProgress == 1050) return vars.Split("fight_nathans_bodyguard");
-    else if (current.haanitProgress == 1100) return vars.Split("fight_ancient_one");
-    else if (current.haanitProgress == 1120) return vars.Split("fight_lord_of_the_forest");
-    else if (current.haanitProgress == 2030) return vars.Split("fight_alaic");
-    else if (current.haanitProgress == 2090) return vars.Split("fight_dragon");
-    else if (current.haanitProgress == 3130) return vars.Split("fight_redeye");
-    else if (current.haanitProgress % 1000 == 0) 
+    if (current.HaanitProgress == 110) return vars.Split("fight_ghisarma");
+    else if (current.HaanitProgress == 1050) return vars.Split("fight_nathans_bodyguard");
+    else if (current.HaanitProgress == 1100) return vars.Split("fight_ancient_one");
+    else if (current.HaanitProgress == 1120) return vars.Split("fight_lord_of_the_forest");
+    else if (current.HaanitProgress == 2030) return vars.Split("fight_alaic");
+    else if (current.HaanitProgress == 2090) return vars.Split("fight_dragon");
+    else if (current.HaanitProgress == 3130) return vars.Split("fight_redeye");
+    else if (current.HaanitProgress % 1000 == 0) 
     {
       vars.IsChapterEnding = true;
       vars.CharChapterEnding = "Haanit";
@@ -734,7 +726,7 @@ split
   }
   
   // H'aanit Ending
-  if (current.haanitProgress == 3140 && (current.cutsceneProgressBar > 0.98 || current.cutsceneScriptIndex > 195)) 
+  if (current.HaanitProgress == 3140 && (current.CutsceneProgressBar > 0.98 || current.CutsceneScriptIndex > 195)) 
   {
     return vars.Split("character_story_endings_haanit");
   }
@@ -743,22 +735,22 @@ split
   if (vars.IsChapterEnding) 
   {
     int progress = 0;
-    if (vars.CharChapterEnding == "Ophilia") progress = current.ophiliaProgress;
-    if (vars.CharChapterEnding == "Cyrus") progress = current.cyrusProgress;
-    if (vars.CharChapterEnding == "Tressa") progress = current.tressaProgress;
-    if (vars.CharChapterEnding == "Olberic") progress = current.olbericProgress;
-    if (vars.CharChapterEnding == "Primrose") progress = current.primroseProgress;
-    if (vars.CharChapterEnding == "Alfyn") progress = current.alfynProgress;
-    if (vars.CharChapterEnding == "Therion") progress = current.therionProgress;
-    if (vars.CharChapterEnding == "Haanit") progress = current.haanitProgress;
-    if (vars.SplitChapter(progress, current.gameState, old.gameState)) return true;
+    if (vars.CharChapterEnding == "Ophilia") progress = current.OphiliaProgress;
+    if (vars.CharChapterEnding == "Cyrus") progress = current.CyrusProgress;
+    if (vars.CharChapterEnding == "Tressa") progress = current.TressaProgress;
+    if (vars.CharChapterEnding == "Olberic") progress = current.OlbericProgress;
+    if (vars.CharChapterEnding == "Primrose") progress = current.PrimroseProgress;
+    if (vars.CharChapterEnding == "Alfyn") progress = current.AlfynProgress;
+    if (vars.CharChapterEnding == "Therion") progress = current.TherionProgress;
+    if (vars.CharChapterEnding == "Haanit") progress = current.HaanitProgress;
+    if (vars.SplitChapter(progress, current.GameState, old.GameState)) return true;
   }
 
   // Credits
-  if (current.zoneID == 10 && current.zoneID != old.zoneID) return vars.Split("credits");
+  if (current.ZoneID == 10 && current.ZoneID != old.ZoneID) return vars.Split("credits");
 
   // Galdera Splits
-  if (current.zoneID == 195 && old.zoneID == 194) return vars.Split("finis_start");
-  if (current.zoneID == 196 && old.zoneID == 195) return vars.Split("journeys_end_start");
-  if (current.zoneID == 194 && current.money - old.money == 100000) return vars.Split("at_journeys_end");
+  if (current.ZoneID == 195 && old.ZoneID == 194) return vars.Split("finis_start");
+  if (current.ZoneID == 196 && old.ZoneID == 195) return vars.Split("journeys_end_start");
+  if (current.ZoneID == 194 && current.Money - old.Money == 100000) return vars.Split("at_journeys_end");
 }
