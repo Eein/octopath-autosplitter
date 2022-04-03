@@ -1,5 +1,4 @@
-state("Octopath_Traveler-Win64-Shipping")
-{
+state("Octopath_Traveler-Win64-Shipping") {
   int start: 0x2B32C48, 0xE30;
   int characterIsHighlighted: 0x289D268, 0x368, 0x0, 0x328;
 
@@ -22,53 +21,45 @@ state("Octopath_Traveler-Win64-Shipping")
   int haanitProgress: 0x0289CC48, 0x370, 0x1C8, 0x380;
 }
 
-init 
-{
+init {
   vars.Splits = new HashSet<string>();
-
-  Func<string,bool> Split = (key) => {
-    if(vars.Splits.Contains(key)) { return false; }
-    vars.Splits.Add(key);
-    return settings[key];
-  };
-  vars.Split = Split;
-
   vars.isChapterEnding = false;
   vars.charChapterEnding = "";
-
-  // bool return doesnt do anything, i just dont know how to make a lambda without a return lol
-  Func<string,bool> SetCharacterEnding = (character) => {
-    vars.isChapterEnding = true;
-    vars.charChapterEnding = character;
-    return false;
-  };
-  // same here
-  Func<bool> ClearCharacterEnding = () => {
-    vars.isChapterEnding = false;
-    vars.charChapterEnding = "";
-    return false;
-  };
-  vars.SetCharacterEnding = SetCharacterEnding;
-  vars.ClearCharacterEnding = ClearCharacterEnding;
-
-  Func<int,int,int,bool> SplitChapter = (progress, curGameState, oldGameState) => {
-    if (progress % 1000 == 0 && vars.isChapterEnding && curGameState == 2 && oldGameState == 5) {
-      int currentChapter = progress / 1000;
-      if (currentChapter == 0) { return false; }
-      string key = String.Format("chapter_end_" + vars.charChapterEnding.ToLower() + "_" + currentChapter.ToString());
-      ClearCharacterEnding();
-      return vars.Split(key);
-    }
-    return false;
-  };
-  vars.SplitChapter = SplitChapter;
 
   vars.deaths = 0;
   vars.encounters = 0;
   vars.counterTextComponent = -1;
 
-  Func<string> UpdateCounter = () => vars.counterTextComponent.Settings.Text2 = vars.encounters + "/" + vars.deaths;
-  vars.UpdateCounter = UpdateCounter;
+  vars.Split = (Func<string,bool>)(key => {
+    if(vars.Splits.Contains(key)) { return false; }
+    vars.Splits.Add(key);
+    return settings[key];
+  });
+
+  vars.SetCharacterEnding = (Action<string>)(character => {
+    vars.isChapterEnding = true;
+    vars.charChapterEnding = character;
+  });
+
+  vars.ClearCharacterEnding = (Action)(() => {
+    vars.isChapterEnding = false;
+    vars.charChapterEnding = "";
+  });
+
+  vars.SplitChapter = (Func<int,int,int,bool>)((progress, curGameState, oldGameState) => {
+    if (progress % 1000 == 0 && vars.isChapterEnding && curGameState == 2 && oldGameState == 5) {
+      int currentChapter = progress / 1000;
+      if (currentChapter == 0) { return false; }
+      string key = String.Format("chapter_end_" + vars.charChapterEnding.ToLower() + "_" + currentChapter.ToString());
+      vars.ClearCharacterEnding();
+      return vars.Split(key);
+    }
+    return false;
+  });
+
+  vars.UpdateCounter = (Action)(() => {
+    vars.counterTextComponent.Settings.Text2 = vars.encounters + "/" + vars.deaths;
+  });
 
   // Stole this from FF13 Autosplitter, thanks Roosta :)
   // Might be better implementation possible
@@ -77,25 +68,26 @@ init
 		  if (settings["encounter_death_counter"] == true & vars.counterTextComponent == -1) {
         vars.counterTextComponent = component;
         vars.counterTextComponent.Settings.Text1 = "Encounters / Deaths";
-        UpdateCounter();
+        vars.UpdateCounter();
       }
 		}
   }
 }
 
-update
-{
-  if (timer.CurrentPhase == TimerPhase.NotRunning) {
-    vars.Splits.Clear();
-    vars.ClearCharacterEnding();
+onReset {
+  vars.Splits.Clear();
+  vars.ClearCharacterEnding();
 
-    // Encounter / Death Counter logic 
-    if (settings["encounter_death_counter"]) {
-      vars.deaths = 0;
-      vars.encounters = 0;
-      vars.UpdateCounter();
-    }
-  } else if (timer.CurrentPhase == TimerPhase.Running) {
+  // Encounter / Death Counter logic 
+  if (settings["encounter_death_counter"]) {
+    vars.deaths = 0;
+    vars.encounters = 0;
+    vars.UpdateCounter();
+  }
+}
+
+update {
+ if (timer.CurrentPhase == TimerPhase.Running) {
     if (current.gameState == 6 && old.gameState == 2) {
       vars.encounters = vars.encounters + 1;
       vars.UpdateCounter();
@@ -106,9 +98,7 @@ update
   }
 }
 
-startup 
-{
-
+startup {
   // Character Story Endings
   settings.Add("character_story_endings", true, "Character Story Endings");
   settings.SetToolTip("character_story_endings", "Split on final cutscene final input before credits. IF more than 1 Ch.4 completed in category, ONLY ENABLE THE FINAL CH4 CHARACTER.");
@@ -228,11 +218,7 @@ startup
   settings.Add("chapter_end_haanit_3", false, "Chapter 3 End", "haanit_story");
   settings.Add("fight_redeye", false, "Redeye", "haanit_story");
   settings.Add("chapter_end_haanit_4", false, "Chapter 4 End", "haanit_story");
-  
-  Func<string,string> NameToKey = (name) => {
-    return name.ToLower().Replace(' ', '_').Replace("'", "");
-  };
-  vars.NameToKey = NameToKey;
+
 
   vars.ShrineZoneIDs = new Dictionary<int,string> {
     { 179, "Cleric Shrine" },
@@ -244,11 +230,15 @@ startup
     { 185, "Thief Shrine" },
     { 186, "Hunter Shrine" }
   };
+  
+  vars.NameToKey = (Func<string,string>)(name => {
+    return name.ToLower().Replace(' ', '_').Replace("'", "");
+  });
 
   settings.Add("get_shrine", true, "Get Shrines");
   settings.SetToolTip("get_shrine", "Split on getting Job from Shrine.");
   foreach (var shrineName in vars.ShrineZoneIDs.Values) {
-    settings.Add("get_" + NameToKey(shrineName), false, "Get " + shrineName, "get_shrine");
+    settings.Add("get_" + vars.NameToKey(shrineName), false, "Get " + shrineName, "get_shrine");
   }
 
   // After finishing advanced job fight state goes from 6 to 5
@@ -261,198 +251,190 @@ startup
 
   settings.Add("advanced_job_fights", true, "Advanced Job Fights");
   settings.SetToolTip("advanced_job_fights", "Split after defeating boss.");
-  foreach (var fight in vars.AdvancedJobFights.Values) {
-    settings.Add("advanced_job_fight_" + NameToKey(fight), true, fight, "advanced_job_fights");
+  foreach (string fight in vars.AdvancedJobFights.Values) {
+    settings.Add("advanced_job_fight_" + vars.NameToKey(fight), true, fight, "advanced_job_fights");
   }
 
-  Func<string,string,int,ExpandoObject> CreateArea = (name, region, ring) => {
-    dynamic area = new ExpandoObject();
-    area.name = name;
-    area.region = region;
-    area.ring = ring;
-    return area;
-  };
-
-  vars.AreaZoneIDs = new Dictionary<int, ExpandoObject> {
-    { 12, CreateArea("Cobbleston", "Highlands", 1) },
-    { 13, CreateArea("Stonegard", "Highlands", 2) },
-    { 14, CreateArea("Stonegard Heights", "Highlands", 2) },
-    { 15, CreateArea("Stonegard Valleys", "Highlands", 2) },
-    { 16, CreateArea("Everhold", "Highlands", 3) },
-    { 17, CreateArea("Everhold Amphitheatre", "Highlands", 3) },
-    { 18, CreateArea("Mountain Pass", "Highlands", 1) },
-    { 19, CreateArea("North Cobbleston Gap", "Highlands", 1) },
-    { 20, CreateArea("South Cobbleston Gap", "Highlands", 1) },
-    { 21, CreateArea("Brigand's Den", "Highlands", 1) },
-    { 22, CreateArea("Untouched Sanctum", "Highlands", 1) },
-    { 23, CreateArea("Spectrewood Path", "Highlands", 2) },
-    { 24, CreateArea("North Stoneguard Pass", "Highlands", 2) },
-    { 25, CreateArea("West Stonegard Pass", "Highlands", 2) },
-    { 26, CreateArea("The Spectrewood", "Highlands", 2) },
-    { 27, CreateArea("Yvon's Cellar, Yvon's Birthplace", "Highlands", 2) },
-    { 28, CreateArea("Tomb of Kings", "Highlands", 2) },
-    { 29, CreateArea("West Everhold Pass", "Highlands", 3) },
-    { 30, CreateArea("Amphitheatre: Arena", "Highlands", 3) },
-    { 31, CreateArea("Amphitheatre: Balcony", "Highlands", 3) },
-    { 32, CreateArea("Everhold Amphitheatre (deeper into Prim 4, end of Prim 4)", "Highlands",  3) },
-    { 33, CreateArea("Everhold Tunnels", "Highlands", 3) },
-    { 34, CreateArea("Sunshade", "Sunlands", 1) },
-    { 35, CreateArea("Sunshade Tavern", "Sunlands", 1) },
-    { 36, CreateArea("Southern Sunshade Sands", "Sunlands", 1) },
-    { 37, CreateArea("Eastern Sunshade Sands", "Sunlands", 1) },
-    { 38, CreateArea("Sunshade Catacombs", "Sunlands", 1) },
-    { 39, CreateArea("Whistling Cavern", "Sunlands", 1) },
-    { 40, CreateArea("Wellspring", "Sunlands", 2) },
-    { 42, CreateArea("Western Wellspring Sands", "Sunlands", 2) },
-    { 43, CreateArea("Southern Wellspring Sands", "Sunlands", 2) },
-    { 44, CreateArea("Northern Wellspring Sands", "Sunlands", 2) },
-    { 45, CreateArea("Eastern Wellspring Sands", "Sunlands", 2) },
-    { 46, CreateArea("Lizardman's Den", "Sunlands", 2) },
-    { 47, CreateArea("Black Market", "Sunlands", 2) },
-    { 48, CreateArea("Quicksand Caves", "Sunlands", 2) },
-    { 49, CreateArea("Marsalim", "Sunlands", 3) },
-    { 50, CreateArea("Marsalim Palace", "Sunlands", 3) },
-    { 51, CreateArea("Grimsand Road", "Sunlands", 3) },
-    { 52, CreateArea("Eastern Marsalim Sands", "Sunlands", 3) },
-    { 53, CreateArea("Grimsand Ruins #1", "Sunlands", 3) },
-    { 54, CreateArea("Grimsand Ruins #2", "Sunlands", 3) },
-    { 55, CreateArea("Marsalim Catacombs", "Sunlands", 3) },
-    { 56, CreateArea("Clearbrook", "Riverlands", 1) },
-    { 57, CreateArea("Path of Rhiyo", "Riverlands", 1) },
-    { 58, CreateArea("South Clearbrook Traverse", "Riverlands", 1) },
-    { 59, CreateArea("West Clearbrook Traverse", "Riverlands", 1) },
-    { 60, CreateArea("Cave of Rhiyo", "Riverlands", 1) },
-    { 61, CreateArea("Twin Falls", "Riverlands", 1) },
-    { 62, CreateArea("Saintsbridge", "Riverlands", 2) },
-    { 63, CreateArea("Saintsbridge: Upstream", "Riverlands", 2) },
-    { 64, CreateArea("Saintsbridge Cathedral", "Riverlands", 2) },
-    { 65, CreateArea("Murkwood Trail", "Riverlands", 2) },
-    { 66, CreateArea("East Saintsbridge Traverse", "Riverlands", 2) },
-    { 67, CreateArea("The Murkwood", "Riverlands", 2) },
-    { 68, CreateArea("Rivira Woods", "Riverlands", 2) },
-    { 69, CreateArea("Farshore", "Riverlands", 2) },
-    { 70, CreateArea("Riverford", "Riverlands", 3) },
-    { 71, CreateArea("Manse Gardens, Lower Riverford", "Riverlands", 3) },
-    { 72, CreateArea("North Riverford Traverse", "Riverlands", 3) },
-    { 73, CreateArea("Hidden Path", "Riverlands", 3) },
-    { 74, CreateArea("Lord's Manse", "Riverlands", 3) },
-    { 75, CreateArea("Refuge Ruins", "Riverlands", 3) },
-    { 76, CreateArea("Atlasdam", "Flatlands", 1) },
-    { 77, CreateArea("Atlasdam Palace Gate, Royal Academy of Atlasdam", "Flatlands", 1) },
-    { 78, CreateArea("Atlasdam Palace", "Flatlands", 1) },
-    { 79, CreateArea("East Atlasdam Flats", "Flatlands", 1) },
-    { 80, CreateArea("North Atlasdam Flats", "Flatlands", 1) },
-    { 81, CreateArea("Subterranean Study", "Flatlands", 1) },
-    { 82, CreateArea("The Whistlewood", "Flatlands", 1) },
-    { 83, CreateArea("Noblecourt", "Flatlands", 2) },
-    { 84, CreateArea("East Noblecourt", "Flatlands", 2) },
-    { 85, CreateArea("Western Noblecourt Flats", "Flatlands", 2) },
-    { 86, CreateArea("Orlick's Manse", "Flatlands", 2) },
-    { 87, CreateArea("Obsidian Manse", "Flatlands", 2) },
-    { 88, CreateArea("The Hollow Throne", "Flatlands", 2) },
-    { 89, CreateArea("Wispermill", "Flatlands", 3) },
-    { 90, CreateArea("Western Wispermill Flats", "Flatlands", 3) },
-    { 91, CreateArea("Ebony Grotto #1", "Flatlands", 3) },
-    { 92, CreateArea("Ebony Grotto #2", "Flatlands", 3) },
-    { 93, CreateArea("Forest of Purgation", "Flatlands", 3) },
-    { 94, CreateArea("Bolderfall", "Clifflands", 1) },
-    { 95, CreateArea("Lower Bolderfall", "Clifflands", 1) },
-    { 96, CreateArea("Ruvus Manor Gate", "Clifflands", 1) },
-    { 97, CreateArea("North Bolderfall Pass", "Clifflands", 1) },
-    { 98, CreateArea("South Bolderfall Pass", "Clifflands", 1) },
-    { 99, CreateArea("Ravus Manor", "Clifflands", 1) },
-    { 100, CreateArea("Carrion Caves", "Clifflands", 1) },
-    { 101, CreateArea("Quarrycrest", "Clifflands", 2) },
-    { 102, CreateArea("Quarrycrest Mines", "Clifflands", 2) },
-    { 103, CreateArea("Road to Morlock's Manse", "Clifflands", 2) },
-    { 104, CreateArea("South Quarrycrest Pass", "Clifflands", 2) },
-    { 105, CreateArea("Morlock's Manse", "Clifflands", 2) },
-    { 106, CreateArea("The Sewers", "Clifflands", 2) },
-    { 107, CreateArea("Derelict Mine", "Clifflands", 2) },
-    { 108, CreateArea("Orewell", "Clifflands", 3) },
-    { 109, CreateArea("Trail to Forest of Rubeh", "Clifflands", 3) },
-    { 110, CreateArea("South Orewell Pass", "Clifflands", 3) },
-    { 111, CreateArea("Forest of Rubeh #1", "Clifflands", 3) },
-    { 112, CreateArea("Forest of Rubeh #2", "Clifflands", 3) },
-    { 113, CreateArea("Dragonsong Fane", "Clifflands", 3) },
-    { 114, CreateArea("Rippletide", "Coastlands", 1) },
-    { 115, CreateArea("Path to the Caves of Maiya", "Coastlands", 1) },
-    { 116, CreateArea("North Rippletide Coast", "Coastlands", 1) },
-    { 117, CreateArea("East Rippletide Coast", "Coastlands", 1) },
-    { 118, CreateArea("Caves of Maiya", "Coastlands", 1) },
-    { 119, CreateArea("Undertow Cave", "Coastlands", 1) },
-    { 120, CreateArea("Goldshore", "Coastlands", 2) },
-    { 121, CreateArea("Goldshore Manor District", "Coastlands", 2) },
-    { 122, CreateArea("Goldshore Cathedral", "Coastlands", 2) },
-    { 123, CreateArea("Road to the Seaside Grotto", "Coastlands", 2) },
-    { 124, CreateArea("Road to the Caves of Azure", "Coastlands", 2) },
-    { 125, CreateArea("West Goldshore Coast", "Coastlands", 2) },
-    { 126, CreateArea("Moonstruck Coast", "Coastlands", 2) },
-    { 127, CreateArea("Seaside Grotto", "Coastlands", 2) },
-    { 128, CreateArea("Caves of Azure", "Coastlands", 2) },
-    { 129, CreateArea("Captain's Bane", "Coastlands", 2) },
-    { 130, CreateArea("Grandport #1", "Coastlands", 3) },
-    { 131, CreateArea("Grandport #2", "Coastlands", 3) },
-    { 132, CreateArea("Grandport #3", "Coastlands", 3) },
-    { 133, CreateArea("West Grandport Coast", "Coastlands", 3) },
-    { 134, CreateArea("Grandport Sewers #1", "Coastlands", 3) },
-    { 135, CreateArea("Grandport Sewers #2", "Coastlands", 3) },
-    { 136, CreateArea("Loch of the Lost King", "Coastlands", 3) },
-    { 137, CreateArea("Flamesgrace #1", "Frostlands", 1) },
-    { 138, CreateArea("Flamesgrace #2", "Frostlands", 1) },
-    { 139, CreateArea("Flamesgrace Church", "Frostlands", 1) },
-    { 140, CreateArea("Path to the Cave of Origin", "Frostlands", 1) },
-    { 141, CreateArea("Western Flamesgrace Wilds", "Frostlands", 1) },
-    { 142, CreateArea("Northern Flamesgrace Wilds", "Frostlands", 1) },
-    { 143, CreateArea("Cave of Origin", "Frostlands", 1) },
-    { 144, CreateArea("Hoarfrost Grotto", "Frostlands", 1) },
-    { 145, CreateArea("Stillsnow", "Frostlands", 2) },
-    { 146, CreateArea("Trail to the Whitewood", "Frostlands", 2) },
-    { 147, CreateArea("Road to the Obsidian Parlor", "Frostlands", 2) },
-    { 148, CreateArea("Western Stillsnow Wilds", "Frostlands", 2) },
-    { 149, CreateArea("The Whitewood", "Frostlands", 2) },
-    { 150, CreateArea("Secret Path", "Frostlands", 2) },
-    { 151, CreateArea("Tomb of the Imperator", "Frostlands", 2) },
-    { 152, CreateArea("Northreach", "Frostlands", 3) },
-    { 153, CreateArea("Northreach: Lorn Cathedral", "Frostlands", 3) },
-    { 154, CreateArea("Southern Northreach Wilds", "Frostlands", 3) },
-    { 155, CreateArea("Lorn Cathedral: Cellars", "Frostlands", 3) },
-    { 156, CreateArea("Lorn Cathedral: Cellars #2", "Frostlands", 3) },
-    { 157, CreateArea("Maw of the Ice Dragon", "Frostlands", 3) },
-    { 158, CreateArea("S'warkii", "Woodlands", 1) },
-    { 159, CreateArea("Path to the Whisperwood", "Woodlands", 1) },
-    { 160, CreateArea("West S'warkii Trail", "Woodlands", 1) },
-    { 161, CreateArea("North S'warkii Trail", "Woodlands", 1) },
-    { 162, CreateArea("The Whisperwood", "Woodlands", 1) },
-    { 163, CreateArea("Path of Beasts", "Woodlands", 1) },
-    { 164, CreateArea("Victor's Hollow", "Woodlands", 2) },
-    { 165, CreateArea("Victor's Hollow: Arena Gate", "Woodlands", 2) },
-    { 166, CreateArea("Victor's Hollow: Arena", "Woodlands", 2) },
-    { 167, CreateArea("Path to the Forgotten Grotto", "Woodlands", 2) },
-    { 168, CreateArea("East Victor's Hollow Trail", "Woodlands", 2) },
-    { 169, CreateArea("Forgotten Grotto", "Woodlands", 2) },
-    { 170, CreateArea("Forest of No Return", "Woodlands", 2) },
-    { 171, CreateArea("Duskbarrow", "Woodlands", 3) },
-    { 172, CreateArea("East Duskbarrow Trail", "Woodlands", 3) },
-    { 173, CreateArea("Ruins of Eld #1", "Woodlands", 3) },
-    { 174, CreateArea("Ruins of Eld #2", "Woodlands", 3) },
-    { 175, CreateArea("Moldering Ruins", "Woodlands", 3) },
-    { 179, CreateArea("Shrine of the Flamebearer", "Frostlands", 2) },
-    { 180, CreateArea("Shrine of the Sage", "Flatlands", 2) },
-    { 181, CreateArea("Shrine of the Trader", "Coastlands", 2) },
-    { 182, CreateArea("Shrine of the Thunderblade", "Highlands", 2) },
-    { 183, CreateArea("Shrine of the Lady of Grace", "Sunlands", 2) },
-    { 184, CreateArea("Shrine of the Healer", "Frostlands", 2) },
-    { 185, CreateArea("Shrine of the Prince of Thieves", "Clifflands", 2) },
-    { 186, CreateArea("Shrine of the Huntress", "Woodlands", 2) },
-    { 187, CreateArea("Shrine of the Starseer", "Flatlands", 3) },
-    { 188, CreateArea("Shrine of the Runeblade", "Highlands", 3) },
-    { 189, CreateArea("Shrine of the Warbringer", "Riverlands", 3) },
-    { 190, CreateArea("Shrine of the Archmagus", "Woodlands", 3) },
-    { 193, CreateArea("Obsidian Parlor", "Frostlands", 2) },
-    { 194, CreateArea("Ruins of Hornburg", "Highlands", 3) },
-    { 195, CreateArea("The Gate of Finis", "Highlands", 3) },
-    { 196, CreateArea("Journey's End", "Highlands", 3) },
+  vars.AreaZoneIDs = new Dictionary<int, dynamic> {
+    { 12, new { name = "Cobbleston", region = "Highlands", ring = 1 } },
+    { 13, new { name = "Stonegard", region = "Highlands", ring = 2 } },
+    { 14, new { name = "Stonegard Heights", region = "Highlands", ring = 2 } },
+    { 15, new { name = "Stonegard Valleys", region = "Highlands", ring = 2 } },
+    { 16, new { name = "Everhold", region = "Highlands", ring = 3 } },
+    { 17, new { name = "Everhold Amphitheatre", region = "Highlands", ring = 3 } },
+    { 18, new { name = "Mountain Pass", region = "Highlands", ring = 1 } },
+    { 19, new { name = "North Cobbleston Gap", region = "Highlands", ring = 1 } },
+    { 20, new { name = "South Cobbleston Gap", region = "Highlands", ring = 1 } },
+    { 21, new { name = "Brigand's Den", region = "Highlands", ring = 1 } },
+    { 22, new { name = "Untouched Sanctum", region = "Highlands", ring = 1 } },
+    { 23, new { name = "Spectrewood Path", region = "Highlands", ring = 2 } },
+    { 24, new { name = "North Stoneguard Pass", region = "Highlands", ring = 2 } },
+    { 25, new { name = "West Stonegard Pass", region = "Highlands", ring = 2 } },
+    { 26, new { name = "The Spectrewood", region = "Highlands", ring = 2 } },
+    { 27, new { name = "Yvon's Cellar, Yvon's Birthplace", region = "Highlands", ring = 2 } },
+    { 28, new { name = "Tomb of Kings", region = "Highlands", ring = 2 } },
+    { 29, new { name = "West Everhold Pass", region = "Highlands", ring = 3 } },
+    { 30, new { name = "Amphitheatre: Arena", region = "Highlands", ring = 3 } },
+    { 31, new { name = "Amphitheatre: Balcony", region = "Highlands", ring = 3 } },
+    { 32, new { name = "Everhold Amphitheatre (deeper into Prim 4, end of Prim 4)", region = "Highlands",  ring = 3 } },
+    { 33, new { name = "Everhold Tunnels", region = "Highlands", ring = 3 } },
+    { 34, new { name = "Sunshade", region = "Sunlands", ring = 1 } },
+    { 35, new { name = "Sunshade Tavern", region = "Sunlands", ring = 1 } },
+    { 36, new { name = "Southern Sunshade Sands", region = "Sunlands", ring = 1 } },
+    { 37, new { name = "Eastern Sunshade Sands", region = "Sunlands", ring = 1 } },
+    { 38, new { name = "Sunshade Catacombs", region = "Sunlands", ring = 1 } },
+    { 39, new { name = "Whistling Cavern", region = "Sunlands", ring = 1 } },
+    { 40, new { name = "Wellspring", region = "Sunlands", ring = 2 } },
+    { 42, new { name = "Western Wellspring Sands", region = "Sunlands", ring = 2 } },
+    { 43, new { name = "Southern Wellspring Sands", region = "Sunlands", ring = 2 } },
+    { 44, new { name = "Northern Wellspring Sands", region = "Sunlands", ring = 2 } },
+    { 45, new { name = "Eastern Wellspring Sands", region = "Sunlands", ring = 2 } },
+    { 46, new { name = "Lizardman's Den", region = "Sunlands", ring = 2 } },
+    { 47, new { name = "Black Market", region = "Sunlands", ring = 2 } },
+    { 48, new { name = "Quicksand Caves", region = "Sunlands", ring = 2 } },
+    { 49, new { name = "Marsalim", region = "Sunlands", ring = 3 } },
+    { 50, new { name = "Marsalim Palace", region = "Sunlands", ring = 3 } },
+    { 51, new { name = "Grimsand Road", region = "Sunlands", ring = 3 } },
+    { 52, new { name = "Eastern Marsalim Sands", region = "Sunlands", ring = 3 } },
+    { 53, new { name = "Grimsand Ruins #1", region = "Sunlands", ring = 3 } },
+    { 54, new { name = "Grimsand Ruins #2", region = "Sunlands", ring = 3 } },
+    { 55, new { name = "Marsalim Catacombs", region = "Sunlands", ring = 3 } },
+    { 56, new { name = "Clearbrook", region = "Riverlands", ring = 1 } },
+    { 57, new { name = "Path of Rhiyo", region = "Riverlands", ring = 1 } },
+    { 58, new { name = "South Clearbrook Traverse", region = "Riverlands", ring = 1 } },
+    { 59, new { name = "West Clearbrook Traverse", region = "Riverlands", ring = 1 } },
+    { 60, new { name = "Cave of Rhiyo", region = "Riverlands", ring = 1 } },
+    { 61, new { name = "Twin Falls", region = "Riverlands", ring = 1 } },
+    { 62, new { name = "Saintsbridge", region = "Riverlands", ring = 2 } },
+    { 63, new { name = "Saintsbridge: Upstream", region = "Riverlands", ring = 2 } },
+    { 64, new { name = "Saintsbridge Cathedral", region = "Riverlands", ring = 2 } },
+    { 65, new { name = "Murkwood Trail", region = "Riverlands", ring = 2 } },
+    { 66, new { name = "East Saintsbridge Traverse", region = "Riverlands", ring = 2 } },
+    { 67, new { name = "The Murkwood", region = "Riverlands", ring = 2 } },
+    { 68, new { name = "Rivira Woods", region = "Riverlands", ring = 2 } },
+    { 69, new { name = "Farshore", region = "Riverlands", ring = 2 } },
+    { 70, new { name = "Riverford", region = "Riverlands", ring = 3 } },
+    { 71, new { name = "Manse Gardens, Lower Riverford", region = "Riverlands", ring = 3 } },
+    { 72, new { name = "North Riverford Traverse", region = "Riverlands", ring = 3 } },
+    { 73, new { name = "Hidden Path", region = "Riverlands", ring = 3 } },
+    { 74, new { name = "Lord's Manse", region = "Riverlands", ring = 3 } },
+    { 75, new { name = "Refuge Ruins", region = "Riverlands", ring = 3 } },
+    { 76, new { name = "Atlasdam", region = "Flatlands", ring = 1 } },
+    { 77, new { name = "Atlasdam Palace Gate, Royal Academy of Atlasdam", region = "Flatlands", ring = 1 } },
+    { 78, new { name = "Atlasdam Palace", region = "Flatlands", ring = 1 } },
+    { 79, new { name = "East Atlasdam Flats", region = "Flatlands", ring = 1 } },
+    { 80, new { name = "North Atlasdam Flats", region = "Flatlands", ring = 1 } },
+    { 81, new { name = "Subterranean Study", region = "Flatlands", ring = 1 } },
+    { 82, new { name = "The Whistlewood", region = "Flatlands", ring = 1 } },
+    { 83, new { name = "Noblecourt", region = "Flatlands", ring = 2 } },
+    { 84, new { name = "East Noblecourt", region = "Flatlands", ring = 2 } },
+    { 85, new { name = "Western Noblecourt Flats", region = "Flatlands", ring = 2 } },
+    { 86, new { name = "Orlick's Manse", region = "Flatlands", ring = 2 } },
+    { 87, new { name = "Obsidian Manse", region = "Flatlands", ring = 2 } },
+    { 88, new { name = "The Hollow Throne", region = "Flatlands", ring = 2 } },
+    { 89, new { name = "Wispermill", region = "Flatlands", ring = 3 } },
+    { 90, new { name = "Western Wispermill Flats", region = "Flatlands", ring = 3 } },
+    { 91, new { name = "Ebony Grotto #1", region = "Flatlands", ring = 3 } },
+    { 92, new { name = "Ebony Grotto #2", region = "Flatlands", ring = 3 } },
+    { 93, new { name = "Forest of Purgation", region = "Flatlands", ring = 3 } },
+    { 94, new { name = "Bolderfall", region = "Clifflands", ring = 1 } },
+    { 95, new { name = "Lower Bolderfall", region = "Clifflands", ring = 1 } },
+    { 96, new { name = "Ruvus Manor Gate", region = "Clifflands", ring = 1 } },
+    { 97, new { name = "North Bolderfall Pass", region = "Clifflands", ring = 1 } },
+    { 98, new { name = "South Bolderfall Pass", region = "Clifflands", ring = 1 } },
+    { 99, new { name = "Ravus Manor", region = "Clifflands", ring = 1 } },
+    { 100, new { name = "Carrion Caves", region = "Clifflands", ring = 1 } },
+    { 101, new { name = "Quarrycrest", region = "Clifflands", ring = 2 } },
+    { 102, new { name = "Quarrycrest Mines", region = "Clifflands", ring = 2 } },
+    { 103, new { name = "Road to Morlock's Manse", region = "Clifflands", ring = 2 } },
+    { 104, new { name = "South Quarrycrest Pass", region = "Clifflands", ring = 2 } },
+    { 105, new { name = "Morlock's Manse", region = "Clifflands", ring = 2 } },
+    { 106, new { name = "The Sewers", region = "Clifflands", ring = 2 } },
+    { 107, new { name = "Derelict Mine", region = "Clifflands", ring = 2 } },
+    { 108, new { name = "Orewell", region = "Clifflands", ring = 3 } },
+    { 109, new { name = "Trail to Forest of Rubeh", region = "Clifflands", ring = 3 } },
+    { 110, new { name = "South Orewell Pass", region = "Clifflands", ring = 3 } },
+    { 111, new { name = "Forest of Rubeh #1", region = "Clifflands", ring = 3 } },
+    { 112, new { name = "Forest of Rubeh #2", region = "Clifflands", ring = 3 } },
+    { 113, new { name = "Dragonsong Fane", region = "Clifflands", ring = 3 } },
+    { 114, new { name = "Rippletide", region = "Coastlands", ring = 1 } },
+    { 115, new { name = "Path to the Caves of Maiya", region = "Coastlands", ring = 1 } },
+    { 116, new { name = "North Rippletide Coast", region = "Coastlands", ring = 1 } },
+    { 117, new { name = "East Rippletide Coast", region = "Coastlands", ring = 1 } },
+    { 118, new { name = "Caves of Maiya", region = "Coastlands", ring = 1 } },
+    { 119, new { name = "Undertow Cave", region = "Coastlands", ring = 1 } },
+    { 120, new { name = "Goldshore", region = "Coastlands", ring = 2 } },
+    { 121, new { name = "Goldshore Manor District", region = "Coastlands", ring = 2 } },
+    { 122, new { name = "Goldshore Cathedral", region = "Coastlands", ring = 2 } },
+    { 123, new { name = "Road to the Seaside Grotto", region = "Coastlands", ring = 2 } },
+    { 124, new { name = "Road to the Caves of Azure", region = "Coastlands", ring = 2 } },
+    { 125, new { name = "West Goldshore Coast", region = "Coastlands", ring = 2 } },
+    { 126, new { name = "Moonstruck Coast", region = "Coastlands", ring = 2 } },
+    { 127, new { name = "Seaside Grotto", region = "Coastlands", ring = 2 } },
+    { 128, new { name = "Caves of Azure", region = "Coastlands", ring = 2 } },
+    { 129, new { name = "Captain's Bane", region = "Coastlands", ring = 2 } },
+    { 130, new { name = "Grandport #1", region = "Coastlands", ring = 3 } },
+    { 131, new { name = "Grandport #2", region = "Coastlands", ring = 3 } },
+    { 132, new { name = "Grandport #3", region = "Coastlands", ring = 3 } },
+    { 133, new { name = "West Grandport Coast", region = "Coastlands", ring = 3 } },
+    { 134, new { name = "Grandport Sewers #1", region = "Coastlands", ring = 3 } },
+    { 135, new { name = "Grandport Sewers #2", region = "Coastlands", ring = 3 } },
+    { 136, new { name = "Loch of the Lost King", region = "Coastlands", ring = 3 } },
+    { 137, new { name = "Flamesgrace #1", region = "Frostlands", ring = 1 } },
+    { 138, new { name = "Flamesgrace #2", region = "Frostlands", ring = 1 } },
+    { 139, new { name = "Flamesgrace Church", region = "Frostlands", ring = 1 } },
+    { 140, new { name = "Path to the Cave of Origin", region = "Frostlands", ring = 1 } },
+    { 141, new { name = "Western Flamesgrace Wilds", region = "Frostlands", ring = 1 } },
+    { 142, new { name = "Northern Flamesgrace Wilds", region = "Frostlands", ring = 1 } },
+    { 143, new { name = "Cave of Origin", region = "Frostlands", ring = 1 } },
+    { 144, new { name = "Hoarfrost Grotto", region = "Frostlands", ring = 1 } },
+    { 145, new { name = "Stillsnow", region = "Frostlands", ring = 2 } },
+    { 146, new { name = "Trail to the Whitewood", region = "Frostlands", ring = 2 } },
+    { 147, new { name = "Road to the Obsidian Parlor", region = "Frostlands", ring = 2 } },
+    { 148, new { name = "Western Stillsnow Wilds", region = "Frostlands", ring = 2 } },
+    { 149, new { name = "The Whitewood", region = "Frostlands", ring = 2 } },
+    { 150, new { name = "Secret Path", region = "Frostlands", ring = 2 } },
+    { 151, new { name = "Tomb of the Imperator", region = "Frostlands", ring = 2 } },
+    { 152, new { name = "Northreach", region = "Frostlands", ring = 3 } },
+    { 153, new { name = "Northreach: Lorn Cathedral", region = "Frostlands", ring = 3 } },
+    { 154, new { name = "Southern Northreach Wilds", region = "Frostlands", ring = 3 } },
+    { 155, new { name = "Lorn Cathedral: Cellars", region = "Frostlands", ring = 3 } },
+    { 156, new { name = "Lorn Cathedral: Cellars #2", region = "Frostlands", ring = 3 } },
+    { 157, new { name = "Maw of the Ice Dragon", region = "Frostlands", ring = 3 } },
+    { 158, new { name = "S'warkii", region = "Woodlands", ring = 1 } },
+    { 159, new { name = "Path to the Whisperwood", region = "Woodlands", ring = 1 } },
+    { 160, new { name = "West S'warkii Trail", region = "Woodlands", ring = 1 } },
+    { 161, new { name = "North S'warkii Trail", region = "Woodlands", ring = 1 } },
+    { 162, new { name = "The Whisperwood", region = "Woodlands", ring = 1 } },
+    { 163, new { name = "Path of Beasts", region = "Woodlands", ring = 1 } },
+    { 164, new { name = "Victor's Hollow", region = "Woodlands", ring = 2 } },
+    { 165, new { name = "Victor's Hollow: Arena Gate", region = "Woodlands", ring = 2 } },
+    { 166, new { name = "Victor's Hollow: Arena", region = "Woodlands", ring = 2 } },
+    { 167, new { name = "Path to the Forgotten Grotto", region = "Woodlands", ring = 2 } },
+    { 168, new { name = "East Victor's Hollow Trail", region = "Woodlands", ring = 2 } },
+    { 169, new { name = "Forgotten Grotto", region = "Woodlands", ring = 2 } },
+    { 170, new { name = "Forest of No Return", region = "Woodlands", ring = 2 } },
+    { 171, new { name = "Duskbarrow", region = "Woodlands", ring = 3 } },
+    { 172, new { name = "East Duskbarrow Trail", region = "Woodlands", ring = 3 } },
+    { 173, new { name = "Ruins of Eld #1", region = "Woodlands", ring = 3 } },
+    { 174, new { name = "Ruins of Eld #2", region = "Woodlands", ring = 3 } },
+    { 175, new { name = "Moldering Ruins", region = "Woodlands", ring = 3 } },
+    { 179, new { name = "Shrine of the Flamebearer", region = "Frostlands", ring = 2 } },
+    { 180, new { name = "Shrine of the Sage", region = "Flatlands", ring = 2 } },
+    { 181, new { name = "Shrine of the Trader", region = "Coastlands", ring = 2 } },
+    { 182, new { name = "Shrine of the Thunderblade", region = "Highlands", ring = 2 } },
+    { 183, new { name = "Shrine of the Lady of Grace", region = "Sunlands", ring = 2 } },
+    { 184, new { name = "Shrine of the Healer", region = "Frostlands", ring = 2 } },
+    { 185, new { name = "Shrine of the Prince of Thieves", region = "Clifflands", ring = 2 } },
+    { 186, new { name = "Shrine of the Huntress", region = "Woodlands", ring = 2 } },
+    { 187, new { name = "Shrine of the Starseer", region = "Flatlands", ring = 3 } },
+    { 188, new { name = "Shrine of the Runeblade", region = "Highlands", ring = 3 } },
+    { 189, new { name = "Shrine of the Warbringer", region = "Riverlands", ring = 3 } },
+    { 190, new { name = "Shrine of the Archmagus", region = "Woodlands", ring = 3 } },
+    { 193, new { name = "Obsidian Parlor", region = "Frostlands", ring = 2 } },
+    { 194, new { name = "Ruins of Hornburg", region = "Highlands", ring = 3 } },
+    { 195, new { name = "The Gate of Finis", region = "Highlands", ring = 3 } },
+    { 196, new { name = "Journey's End", region = "Highlands", ring = 3 } },
   };
 
   settings.Add("enter_exit_area", true, "Enter / Exit Area");
@@ -461,7 +443,7 @@ startup
   string[] regions = new string[] { "Frostlands", "Flatlands", "Coastlands", "Highlands", "Sunlands", "Riverlands", "Clifflands", "Woodlands" };
   int[] rings = new int[] { 1, 2, 3 };
   foreach (var region in regions) {
-    string regionKey = NameToKey(region);
+    string regionKey = vars.NameToKey(region);
     settings.Add("enter_exit_area_" + regionKey, true, region, "enter_exit_area");
     foreach (var ring in rings) {
       settings.Add("enter_exit_area_" + regionKey + "_" + ring, true, "Ring " + ring, "enter_exit_area_" + regionKey);
@@ -471,7 +453,7 @@ startup
   foreach (var areaInfo in vars.AreaZoneIDs) {
     var area = areaInfo.Value;
     int zoneID = areaInfo.Key;
-    string parentKey = "enter_exit_area_" + NameToKey(area.region) + "_" + area.ring; 
+    string parentKey = "enter_exit_area_" + vars.NameToKey(area.region) + "_" + area.ring; 
     settings.Add("area_"+ zoneID, true, area.name, parentKey);
     settings.Add("enter_" + zoneID, false, "Enter", "area_" + zoneID);
     settings.Add("exit_" + zoneID, false, "Exit", "area_" + zoneID);
@@ -494,6 +476,10 @@ startup
 
   settings.Add("finis_start", false, "Enter Gate of Finis", "galdera");
   settings.Add("journeys_end_start", false, "Enter Journey's End", "galdera");
+  settings.Add("galdera_phase_1_start", false, "Galdera Phase 1 Battle Start", "galdera");
+  settings.Add("galdera_phase_1_end", false, "Galdera Phase 1 Battle Start", "galdera");
+  settings.Add("galdera_phase_2_start", false, "Galdera Phase 2 Battle Start", "galdera");
+  settings.Add("galdera_phase_2_end", false, "Galdera Phase 2 Battle End", "galdera");
   settings.Add("at_journeys_end", false, "Galdera End", "galdera");
   settings.SetToolTip("at_journeys_end", "Split on category end (get Spurning Ribbon)");
 
@@ -503,8 +489,7 @@ startup
   settings.Add("encounter_death_counter", false, "Override Text Component with a Enounter / Death Counter.");
 }
 
-start
-{
+start {
   if (timer.CurrentPhase == TimerPhase.NotRunning &&
       old.start == 0 &&
       current.start == 1 &&
@@ -513,8 +498,7 @@ start
   }
 }
 
-reset
-{
+reset {
   if (timer.CurrentPhase == TimerPhase.Running &&
       current.characterIsHighlighted == 1 &&
       old.characterIsHighlighted == 0 &&
@@ -523,8 +507,10 @@ reset
   }
 }
 
-split 
-{
+split {
+  print("Gamestate: " + current.gameState + ":" + old.gameState);
+  print("ZoneID: " + current.zoneID + ":" + old.zoneID);
+
   // Shrines
   if (vars.ShrineZoneIDs.ContainsKey(current.zoneID) && current.gameState == 5 && old.gameState == 2) {
     string getShrineKey = "get_" + vars.NameToKey(vars.ShrineZoneIDs[current.zoneID]);
@@ -737,6 +723,22 @@ split
 
   else if (current.zoneID == 196 && old.zoneID == 195) {
     return vars.Split("journeys_end_start");
+  }
+
+  else if (current.zoneID == 196 && current.gameState == 6 && old.gameState == 5) {
+    return vars.Split("galdera_phase_1_start");
+  }
+
+  else if (current.zoneID == 198 && old.zoneID == 196) {
+    return vars.Split("galdera_phase_1_end");
+  }
+
+  else if (current.zoneID == 198 && old.zoneID == 198 && current.gameState == 6 && old.gameState == 5) {
+    return vars.Split("galdera_phase_2_start");
+  }
+
+  else if (current.zoneID == 198 && old.zoneID == 198 && current.gameState == 5 && old.gameState == 6) {
+    return vars.Split("galdera_phase_2_end");
   }
 
   else if (current.zoneID == 194 && current.money - old.money == 100000) {
