@@ -508,9 +508,6 @@ reset {
 }
 
 split {
-  print("Gamestate: " + current.gameState + ":" + old.gameState);
-  print("ZoneID: " + current.zoneID + ":" + old.zoneID);
-
   // Shrines
   if (vars.ShrineZoneIDs.ContainsKey(current.zoneID) && current.gameState == 5 && old.gameState == 2) {
     string getShrineKey = "get_" + vars.NameToKey(vars.ShrineZoneIDs[current.zoneID]);
