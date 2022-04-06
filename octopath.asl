@@ -262,7 +262,7 @@ startup
   settings.Add("advanced_job_fights", true, "Advanced Job Fights");
   settings.SetToolTip("advanced_job_fights", "Split after defeating boss.");
   foreach (var fight in vars.AdvancedJobFights.Values) {
-    settings.Add("advanced_job_fight_" + NameToKey(fight), true, fight, "advanced_job_fights");
+    settings.Add("advanced_job_fight_" + NameToKey(fight), false, fight, "advanced_job_fights");
   }
 
   Func<string,string,int,ExpandoObject> CreateArea = (name, region, ring) => {
@@ -477,7 +477,7 @@ startup
     settings.Add("exit_" + zoneID, false, "Exit", "area_" + zoneID);
   }
 
-  settings.Add("split_characters", false, "Split On Characters");
+  settings.Add("split_characters", true, "Split On Characters");
   settings.SetToolTip("split_characters", "Split on Character joining party (as soon as you say yes).");
   settings.Add("character_ophilia", false, "Ophilia", "split_characters");
   settings.Add("character_cyrus", false, "Cyrus", "split_characters");
