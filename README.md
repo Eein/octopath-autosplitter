@@ -1,13 +1,26 @@
 # Octopath Traveler Autosplitter
 ## Installation
-1. Download [octopath.asl](https://github.com/Eein/octopath-autosplitter/releases/latest/download/octopath.asl)
-2. Open Livesplit
-3. Edit Layout
-  1. Add `Control` > `Scriptable Auto Splitter` component to the layout.
-  2. Double Click `Scriptable Auto Splitter` to edit its settings.
-  3. Click `Browse`, and open the downloaded `octopath.asl` file.
-    - On first load, all the setting are automatically expanded. I recommend pressing `OK` to close settings, and re-opening them. They will no longer be expanded and will be much more managable.
-  4. Select desired options for your run!
+1. Open Livesplit
+2. Edit Splits
+3. Ensure your game name is "Octopath Traveler"
+4. Below you should see an "Activate" and "Settings" button; Click activate, then click settings. That should bring you to a settings pane.
+
+![image](https://user-images.githubusercontent.com/5025835/162367535-edf9a716-d228-483f-ba90-048af10a2181.png)
+
+5. You can select the desired settings for your run in this settings window.
+
+![image](https://user-images.githubusercontent.com/5025835/162367742-ab494dc2-7b1f-4422-851e-ce4bd3f6a4e5.png)
+
+If your splits look live the above, you'd select the following:
+1. Character Stories > Opilia Story > Guardian of the First Flame
+2. Split on Chracters > Cyrus
+3. Character Stories > Cyrus Story > Russell
+4. and so on - etc.
+
+You do not need to select these in order, as they will split when the flags happen, so you can select all of the bosses in livesplit you plan to kill. Just remember that each of these are simply triggers so no need to overcomplicate it.
+
+As mentioned below, Chapter 4 End is NOT the final split for Single story runs. You will need to select:
+- Character Story Endings > <Your Character> Story Ending
 
 **Note: The autosplitter is still being updated and must be manually updated until it is more complete. Once its "ready" we'll request a merge into LiveSplit for automatic loading/updates.**
 
