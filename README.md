@@ -1,4 +1,7 @@
 # Octopath Traveler Autosplitter
+
+An autosplitter for the Steam (PC) version of Octopath Traveler
+
 ## Installation
 1. Open Livesplit
 2. Edit Splits
@@ -7,7 +10,11 @@
 
 ![image](https://user-images.githubusercontent.com/5025835/162367535-edf9a716-d228-483f-ba90-048af10a2181.png)
 
-5. You can select the desired settings for your run in this settings window.
+5. You can select the desired settings for your run in this settings window:
+
+![image](https://user-images.githubusercontent.com/5025835/162368510-4ea4a82b-285c-48c7-a342-e81cf3c23c4f.png)
+
+## Example
 
 ![image](https://user-images.githubusercontent.com/5025835/162367742-ab494dc2-7b1f-4422-851e-ce4bd3f6a4e5.png)
 
@@ -17,12 +24,20 @@ If your splits look live the above, you'd select the following:
 3. Character Stories > Cyrus Story > Russell
 4. and so on - etc.
 
-You do not need to select these in order, as they will split when the flags happen, so you can select all of the bosses in livesplit you plan to kill. Just remember that each of these are simply triggers so no need to overcomplicate it.
+You do not need to select these in order, as they will split when the flags happen, so you can select all of the bosses in livesplit you plan to kill. 
+Just remember that each of these are simply triggers, and they *only* trigger *once*. So if you kill a boss, load a save, and kill the same boss, it will *NOT* trigger again in the same run.
+
+## Single Story Run Endings
 
 As mentioned below, Chapter 4 End is NOT the final split for Single story runs. You will need to select:
 - Character Story Endings > <Your Character> Story Ending
+ 
+## Enter/Exit Areas
+If your splits need to split on "enter", "exit", or "tag" of an area, you can do that with the "Enter / Exit Area" flags. There is a lot of options here but to use them you need to select on enter or on exit. For example, a common split is tagging noblecourt:
 
-**Note: The autosplitter is still being updated and must be manually updated until it is more complete. Once its "ready" we'll request a merge into LiveSplit for automatic loading/updates.**
+![image](https://user-images.githubusercontent.com/5025835/162368956-fa525d38-0271-429b-8f9b-271852130c75.png)
+ 
+The above will split when entering Noblecourt the first time.
 
 ## Usage
 Note that you will likely need a different layout for each category, to store different autosplitter settings. Testing needed, and can possibly be improved.
@@ -53,6 +68,5 @@ Note that you will likely need a different layout for each category, to store di
   * This isn't suitable for ending runs.
 
 ### Known Issues / Enhancements
- - Group areas by region
  - Would be nice to keep options folded by default
  - Would be nice to disable reset by default
