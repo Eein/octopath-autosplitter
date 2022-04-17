@@ -477,7 +477,7 @@ startup {
   settings.Add("finis_start", false, "Enter Gate of Finis", "galdera");
   settings.Add("journeys_end_start", false, "Enter Journey's End", "galdera");
   settings.Add("galdera_phase_1_start", false, "Galdera Phase 1 Battle Start", "galdera");
-  settings.Add("galdera_phase_1_end", false, "Galdera Phase 1 Battle Start", "galdera");
+  settings.Add("galdera_phase_1_end", false, "Galdera Phase 1 Battle End", "galdera");
   settings.Add("galdera_phase_2_start", false, "Galdera Phase 2 Battle Start", "galdera");
   settings.Add("galdera_phase_2_end", false, "Galdera Phase 2 Battle End", "galdera");
   settings.Add("at_journeys_end", false, "Galdera End", "galdera");
