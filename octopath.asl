@@ -85,10 +85,6 @@ init {
     return false;
   });
 
-  vars.UpdateCounter = (Action)(() => {
-    vars.counterTextComponent.Settings.Text2 = vars.encounters + "/" + vars.deaths;
-  });
-
   // Stole this from FF13 Autosplitter, thanks Roosta :)
   // Might be better implementation possible
   foreach (LiveSplit.UI.Components.IComponent component in timer.Layout.Components) {
@@ -100,6 +96,10 @@ init {
       }
     }
   }
+
+  vars.UpdateCounter = (Action)(() => {
+    vars.counterTextComponent.Settings.Text2 = vars.encounters + "/" + vars.deaths;
+  });
 }
 
 onReset {
@@ -547,14 +547,16 @@ split {
     return vars.Split("advanced_job_fight_" + vars.NameToKey(vars.AdvancedJobFights[current.zoneID]));
   }
 
-  // Enter Area
-  if (vars.AreaZoneIDs.ContainsKey(current.zoneID) && old.zoneID != current.zoneID && old.zoneID != 0 && old.gameState == 2) {
-    return vars.Split("enter_" + current.zoneID);
-  }
-
-  // Exit Area
-  if (current.zoneID != 0 && current.zoneID != old.zoneID && vars.AreaZoneIDs.ContainsKey(old.zoneID) && (old.gameState == 2 || old.gameState == 4)) {
-    return vars.Split("exit_" + old.zoneID);
+  // Enter & Exit Area
+  if (old.zoneID != current.zoneID && old.zoneID != 0) {
+    // Enter Area
+    if (vars.AreaZoneIDs.ContainsKey(current.zoneID) && current.gameState == 2 && old.gameState == 2 && vars.Split("enter_" + current.zoneID)) {
+      return true;
+    }
+    // Exit Area
+    if (vars.AreaZoneIDs.ContainsKey(old.zoneID) && (old.gameState == 2 || old.gameState == 4) && vars.Split("exit_" + old.zoneID)) {
+      return true;
+    }
   }
 
   // Characters Joining
