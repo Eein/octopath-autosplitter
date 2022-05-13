@@ -1,4 +1,4 @@
-state("Octopath_Traveler-Win64-Shipping") {
+state("Octopath_Traveler-Win64-Shipping", "Steam") {
   int start: 0x2B32C48, 0xE30;
   int characterIsHighlighted: 0x289D268, 0x368, 0x0, 0x328;
 
@@ -7,8 +7,6 @@ state("Octopath_Traveler-Win64-Shipping") {
   int gameState: 0x0289D270, 0x36C;
   int cutsceneScriptIndex: 0x289D230, 0x388;
 
-  
-  // Works but other is better? float cutsceneProgressBar: 0x0289D268, 0x378, 0x20, 0x230, 0xD0, 0x350;
   float cutsceneProgressBar: 0x0289D268, 0x378, 0x20, 0x230, 0x288;
 
   int ophiliaProgress: 0x0289CC48, 0x370, 0x1C8, 0x510;
@@ -21,7 +19,37 @@ state("Octopath_Traveler-Win64-Shipping") {
   int haanitProgress: 0x0289CC48, 0x370, 0x1C8, 0x380;
 }
 
+state("Octopath_Traveler-Win64-Shipping", "Xbox") {
+  int start: 0x031C1FB0, 0x18, 0x700;
+  int characterIsHighlighted: 0x0302AF18, 0x240, 0x0, 0x358;
+
+  int zoneID: 0x0302AEF0, 0x244;
+  int money: 0x0302A8E8, 0x280, 0x150;
+  int gameState: 0x0302AF20, 0x244;
+  int cutsceneScriptIndex: 0x0302AEE0, 0x260;
+
+  float cutsceneProgressBar: 0x0302AF18, 0x250, 0x20, 0x260, 0x310, 0x230;
+
+  int ophiliaProgress: 0x0302A8E8, 0x280, 0x1C0, 0x510;
+  int cyrusProgress: 0x0302A8E8, 0x280, 0x1C0, 0x1f0;
+  int tressaProgress: 0x0302A8E8, 0x280, 0x1C0, 0x128;
+  int olbericProgress: 0x0302A8E8, 0x280, 0x1C0, 0x60;
+  int primroseProgress: 0x0302A8E8, 0x280, 0x1C0, 0x2b8;
+  int alfynProgress: 0x0302A8E8, 0x280, 0x1C0, 0x5d8;
+  int therionProgress: 0x0302A8E8, 0x280, 0x1C0, 0x448;
+  int haanitProgress: 0x0302A8E8, 0x280, 0x1C0, 0x380;
+}
+
 init {
+  vars.moduleSize = modules.First().ModuleMemorySize;
+  if (vars.moduleSize == 58732544) {
+    version = "Xbox";
+  } else {
+    // Steam = 51175424, but setting it as default.
+    // Don't know how effective this code will be yet.
+    version = "Steam";
+  }
+
   vars.Splits = new HashSet<string>();
   vars.isChapterEnding = false;
   vars.charChapterEnding = "";
@@ -57,10 +85,6 @@ init {
     return false;
   });
 
-  vars.UpdateCounter = (Action)(() => {
-    vars.counterTextComponent.Settings.Text2 = vars.encounters + "/" + vars.deaths;
-  });
-
   // Stole this from FF13 Autosplitter, thanks Roosta :)
   // Might be better implementation possible
   foreach (LiveSplit.UI.Components.IComponent component in timer.Layout.Components) {
@@ -72,6 +96,10 @@ init {
       }
     }
   }
+
+  vars.UpdateCounter = (Action)(() => {
+    vars.counterTextComponent.Settings.Text2 = vars.encounters + "/" + vars.deaths;
+  });
 }
 
 onReset {
@@ -519,14 +547,16 @@ split {
     return vars.Split("advanced_job_fight_" + vars.NameToKey(vars.AdvancedJobFights[current.zoneID]));
   }
 
-  // Enter Area
-  if (vars.AreaZoneIDs.ContainsKey(current.zoneID) && old.zoneID != current.zoneID && old.zoneID != 0 && old.gameState == 2) {
-    return vars.Split("enter_" + current.zoneID);
-  }
-
-  // Exit Area
-  if (current.zoneID != 0 && current.zoneID != old.zoneID && vars.AreaZoneIDs.ContainsKey(old.zoneID) && (old.gameState == 2 || old.gameState == 4)) {
-    return vars.Split("exit_" + old.zoneID);
+  // Enter & Exit Area
+  if (old.zoneID != current.zoneID && old.zoneID != 0) {
+    // Enter Area
+    if (vars.AreaZoneIDs.ContainsKey(current.zoneID) && current.gameState == 2 && old.gameState == 2 && vars.Split("enter_" + current.zoneID)) {
+      return true;
+    }
+    // Exit Area
+    if (vars.AreaZoneIDs.ContainsKey(old.zoneID) && (old.gameState == 2 || old.gameState == 4) && vars.Split("exit_" + old.zoneID)) {
+      return true;
+    }
   }
 
   // Characters Joining
