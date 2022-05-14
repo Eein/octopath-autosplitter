@@ -84,6 +84,10 @@ init {
     }
     return false;
   });
+  
+  vars.UpdateCounter = (Action)(() => {
+    vars.counterTextComponent.Settings.Text2 = vars.encounters + "/" + vars.deaths;
+  });
 
   // Stole this from FF13 Autosplitter, thanks Roosta :)
   // Might be better implementation possible
@@ -96,10 +100,6 @@ init {
       }
     }
   }
-
-  vars.UpdateCounter = (Action)(() => {
-    vars.counterTextComponent.Settings.Text2 = vars.encounters + "/" + vars.deaths;
-  });
 }
 
 onReset {
