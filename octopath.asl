@@ -1,7 +1,5 @@
 state("Octopath_Traveler-Win64-Shipping", "Steam") {
   int start: 0x2B32C48, 0xE30;
-  int characterIsHighlighted: 0x289D268, 0x368, 0x0, 0x328;
-
   int zoneID: 0x289D240, 0x36C;
   int money: 0x0289CC48, 0x370, 0x158;
   int gameState: 0x0289D270, 0x36C;
@@ -21,8 +19,6 @@ state("Octopath_Traveler-Win64-Shipping", "Steam") {
 
 state("Octopath_Traveler-Win64-Shipping", "Xbox") {
   int start: 0x031C1FB0, 0x18, 0x700;
-  int characterIsHighlighted: 0x0302AF18, 0x240, 0x0, 0x358;
-
   int zoneID: 0x0302AEF0, 0x244;
   int money: 0x0302A8E8, 0x280, 0x150;
   int gameState: 0x0302AF20, 0x244;
