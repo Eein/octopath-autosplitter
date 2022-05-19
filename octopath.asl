@@ -527,9 +527,8 @@ start {
 }
 
 reset {
-  if (timer.CurrentPhase == TimerPhase.Running &&
-      current.characterIsHighlighted == 1 &&
-      old.characterIsHighlighted == 0 &&
+  if (old.start == 0 &&
+      current.start == 1 &&
       current.zoneID == 0) {
     return true;
   }
