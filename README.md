@@ -43,8 +43,8 @@ The above will split when entering Noblecourt the first time.
 Note that you will likely need a different layout for each category, to store different autosplitter settings. Testing needed, and can possibly be improved.
 
 ### Options
-- Start: Will start the timer on character selection
-- Reset: If timer is running, will reset if you hover a character in New Game character selection.
+- Start: Will start the timer when starting a character story
+- Reset: If timer is running, will reset if you start a new character story
 - Split: If timer is running, will split on anything enabled in settings.
 
 ### Split Options
